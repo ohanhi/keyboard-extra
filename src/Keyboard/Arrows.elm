@@ -1,7 +1,6 @@
 module Keyboard.Arrows exposing (..)
 
 import Set exposing (Set)
-import Char
 
 
 type alias Arrows =
@@ -41,15 +40,15 @@ determineArrows keys =
 determineWasd : Set Int -> Arrows
 determineWasd keys =
     let
-        toInt char =
+        toInt key =
             keys
-                |> Set.member (Char.toCode char)
+                |> Set.member key
                 |> boolToInt
 
         x =
-            (toInt 'D') - (toInt 'A')
+            (toInt 68) - (toInt 65)
 
         y =
-            (toInt 'W') - (toInt 'S')
+            (toInt 87) - (toInt 83)
     in
         { x = x, y = y }
