@@ -17,14 +17,14 @@ module Keyboard.Extra
 # Model
 @docs Model
 
-# Keyboard key
-@docs Key
-
 # Helpers
 @docs isPressed, arrows, wasd, pressedDown
 
 # Wiring
 @docs Msg, subscriptions, init, update
+
+# Keyboard keys
+@docs Key
 -}
 
 import Keyboard exposing (KeyCode)
@@ -32,13 +32,14 @@ import Set exposing (Set)
 import Keyboard.Arrows as Arrows exposing (Arrows)
 
 
-{-| -}
+{-| The message type `Keyboard.Extra` uses.
+-}
 type Msg
     = Down KeyCode
     | Up KeyCode
 
 
-{-| You will need to add this to your program's subscriptions. Otherwise `Keyboard.Extra` won't be able to provide any information.
+{-| You will need to add this to your program's subscriptions.
 -}
 subscriptions : Sub Msg
 subscriptions =
@@ -48,19 +49,20 @@ subscriptions =
         ]
 
 
-{-| The set of keys that are currently pressed down.
+{-| The internal representation of `Keyboard.Extra`. Useful for type annotation.
 -}
 type alias Model =
     { keysDown : Set KeyCode }
 
 
-{-| -}
+{-| Use this to initialize the component.
+-}
 init : ( Model, Cmd Msg )
 init =
     ( Model Set.empty, Cmd.none )
 
 
-{-| You need to call this to have the model update.
+{-| You need to call this to have the component update.
 -}
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
@@ -85,7 +87,7 @@ update msg model =
 - `{ x = 0, y = 0 }` when pressing no arrows.
 - `{ x =-1, y = 0 }` when pressing the left arrow.
 - `{ x = 1, y = 1 }` when pressing the up and right arrows.
-- `{ x = 0, y =-1 }` when pressing the down, left, and right arrows.
+- `{ x = 0, y =-1 }` when pressing the down, left, and right arrows (left and right cancel out).
 -}
 arrows : Model -> Arrows
 arrows model =
@@ -93,6 +95,11 @@ arrows model =
 
 
 {-| Similar to `arrows`, gives the W, A, S and D keys' pressed down state.
+
+- `{ x = 0, y = 0 }` when pressing none of W, A, S and D.
+- `{ x =-1, y = 0 }` when pressing A.
+- `{ x = 1, y = 1 }` when pressing W and D.
+- `{ x = 0, y =-1 }` when pressing A, S and D (A and D cancel out).
 -}
 wasd : Model -> Arrows
 wasd model =
