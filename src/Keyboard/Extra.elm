@@ -6,7 +6,10 @@ module Keyboard.Extra
         , isPressed
         , arrows
         , wasd
+        , arrowsDirection
+        , wasdDirection
         , pressedDown
+        , Direction(..)
         , Key(..)
         , Model
         , Msg
@@ -14,14 +17,14 @@ module Keyboard.Extra
 
 {-| Convenience helpers for working with keyboard inputs.
 
-# Model
-@docs Model
-
 # Helpers
-@docs isPressed, arrows, wasd, pressedDown
+@docs isPressed, pressedDown
+
+# Directions
+@docs arrows, wasd, Direction, arrowsDirection, wasdDirection
 
 # Wiring
-@docs Msg, subscriptions, init, update
+@docs Model, Msg, subscriptions, init, update
 
 # Keyboard keys
 @docs Key
@@ -105,6 +108,75 @@ arrows model =
 wasd : Model -> Arrows
 wasd model =
     Arrows.determineWasd model.keysDown
+
+
+{-| Type representation of the arrows.
+-}
+type Direction
+    = North
+    | NorthEast
+    | East
+    | SouthEast
+    | South
+    | SouthWest
+    | West
+    | NorthWest
+    | NoDirection
+
+
+{-| Gives the arrow keys' pressed down state as follows:
+
+- `None` when pressing no arrows.
+- `West` when pressing the left arrow.
+- `NorthEast` when pressing the up and right arrows.
+- `South` when pressing the down, left, and right arrows (left and right cancel out).
+-}
+arrowsDirection : Model -> Direction
+arrowsDirection =
+    arrowsToDir << arrows
+
+
+{-| Similar to `arrows`, gives the W, A, S and D keys' pressed down state.
+
+- `None` when pressing none of W, A, S and D.
+- `West` when pressing A.
+- `NorthEast` when pressing W and D.
+- `South` when pressing A, S and D (A and D cancel out).
+-}
+wasdDirection : Model -> Direction
+wasdDirection =
+    arrowsToDir << wasd
+
+
+arrowsToDir : Arrows -> Direction
+arrowsToDir { x, y } =
+    case ( x, y ) of
+        ( 0, 1 ) ->
+            North
+
+        ( 1, 1 ) ->
+            NorthEast
+
+        ( 1, 0 ) ->
+            East
+
+        ( 1, -1 ) ->
+            SouthEast
+
+        ( 0, -1 ) ->
+            South
+
+        ( -1, -1 ) ->
+            SouthWest
+
+        ( -1, 0 ) ->
+            West
+
+        ( -1, 1 ) ->
+            NorthWest
+
+        _ ->
+            NoDirection
 
 
 {-| Check the pressed down state of any `Key`.
