@@ -28,6 +28,7 @@ module Keyboard.Extra
 -}
 
 import Keyboard exposing (KeyCode)
+import Dict exposing (Dict)
 import Set exposing (Set)
 import Keyboard.Arrows as Arrows exposing (Arrows)
 
@@ -124,10 +125,8 @@ pressedDown model =
 
 fromCode : KeyCode -> Key
 fromCode code =
-    codeBook
-        |> List.filter (((==) code) << fst)
-        |> List.map snd
-        |> List.head
+    codeDict
+        |> Dict.get code
         |> Maybe.withDefault Other
 
 
@@ -294,6 +293,11 @@ type Key
     | Meta
     | Altgr
     | Other
+
+
+codeDict : Dict KeyCode Key
+codeDict =
+    Dict.fromList codeBook
 
 
 codeBook : List ( KeyCode, Key )
