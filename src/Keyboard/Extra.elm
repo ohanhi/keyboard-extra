@@ -13,6 +13,7 @@ module Keyboard.Extra
         , Key(..)
         , Model
         , Msg
+        , targetKey
         )
 
 {-| Convenience helpers for working with keyboard inputs.
@@ -26,6 +27,9 @@ module Keyboard.Extra
 # Wiring
 @docs Model, Msg, subscriptions, init, update
 
+# Decoder
+@docs targetKey
+
 # Keyboard keys
 @docs Key
 -}
@@ -33,6 +37,7 @@ module Keyboard.Extra
 import Keyboard exposing (KeyCode)
 import Dict exposing (Dict)
 import Set exposing (Set)
+import Json.Decode as Json exposing ((:=))
 import Keyboard.Arrows as Arrows exposing (Arrows)
 
 
@@ -209,6 +214,19 @@ toCode key =
         |> List.map fst
         |> List.head
         |> Maybe.withDefault 0
+
+
+{-| A `Json.Decoder` for grabbing `event.keyCode` and turning it into a `Key`
+
+    import Json.Decode as Json
+
+    onKey : (Key -> msg) -> Attribute msg
+    onKey tagger =
+      on "keydown" (Json.map tagger targetKey)
+-}
+targetKey : Json.Decoder Key
+targetKey =
+    Json.map fromCode ("keyCode" := Json.int)
 
 
 {-| These are all the keys that have names in `Keyboard.Extra`.
