@@ -49,14 +49,6 @@ logged message decoder =
     decoder `andThen` (\value -> Json.succeed <| Debug.log message value)
 
 
-succeedIfNot : String -> String -> Json.Decoder BestGuessKey
-succeedIfNot s dontBeThat =
-    if s == dontBeThat then
-        Json.fail s
-    else
-        fromString s
-
-
 validKeyValue : String -> Json.Decoder BestGuessKey
 validKeyValue s =
     if s == "" then
@@ -64,11 +56,16 @@ validKeyValue s =
     else
         case String.length s of
             1 ->
-                fromString s
+                case String.uncons s of
+                    Nothing ->
+                        Json.fail <| "invalid string: " ++ s
+
+                    Just ( c, _ ) ->
+                        Json.succeed <| KeyValue c
 
             _ ->
                 if s == "Unidentified" then
-                    Json.fail "unidentified"
+                    Json.fail s
                 else
                     Json.fail <| "unhandled: " ++ s
 
@@ -79,13 +76,3 @@ validKeyCode s =
         Json.fail "0"
     else
         Json.succeed <| KeyCode s
-
-
-fromString : String -> Json.Decoder BestGuessKey
-fromString s =
-    case String.uncons s of
-        Nothing ->
-            Json.fail "invalid string"
-
-        Just ( c, s' ) ->
-            Json.succeed <| KeyValue c
