@@ -1,11 +1,10 @@
 module VisualArrows exposing (..)
 
 import Html exposing (Html, p, div, text)
-import Html.App as Html
 import Keyboard.Extra as Keyboard
 
 
-main : Program Never
+main : Program Never Model Msg
 main =
     Html.program
         { init = init

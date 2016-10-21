@@ -37,7 +37,7 @@ module Keyboard.Extra
 import Keyboard exposing (KeyCode)
 import Dict exposing (Dict)
 import Set exposing (Set)
-import Json.Decode as Json exposing ((:=))
+import Json.Decode as Json
 import Keyboard.Arrows as Arrows exposing (Arrows)
 
 
@@ -226,7 +226,7 @@ toCode key =
 -}
 targetKey : Json.Decoder Key
 targetKey =
-    Json.map fromCode ("keyCode" := Json.int)
+    Json.map fromCode (Json.field "keyCode" Json.int)
 
 
 {-| These are all the keys that have names in `Keyboard.Extra`.
