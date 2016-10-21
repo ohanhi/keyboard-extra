@@ -1,6 +1,6 @@
 # Keyboard Extra
 
-Higher level handling for keyboard inputs in Elm 0.17.
+Higher level handling for keyboard inputs in Elm 0.17 and 0.18.
 
 This library is a standard component following The Elm Architecture.
 

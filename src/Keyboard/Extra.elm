@@ -14,6 +14,8 @@ module Keyboard.Extra
         , Model
         , Msg
         , targetKey
+        , toCode
+        , fromCode
         )
 
 {-| Convenience helpers for working with keyboard inputs.
@@ -32,6 +34,9 @@ module Keyboard.Extra
 
 # Keyboard keys
 @docs Key
+
+# Low level
+@docs fromCode, toCode
 -}
 
 import Keyboard exposing (KeyCode)
@@ -200,6 +205,8 @@ pressedDown model =
         |> List.map fromCode
 
 
+{-| Convert a key code into a `Key`.
+-}
 fromCode : KeyCode -> Key
 fromCode code =
     codeDict
@@ -207,6 +214,8 @@ fromCode code =
         |> Maybe.withDefault Other
 
 
+{-| Convert a `Key` into a key code.
+-}
 toCode : Key -> KeyCode
 toCode key =
     codeBook
