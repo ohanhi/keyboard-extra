@@ -14,6 +14,8 @@ module Keyboard.Extra
         , Model
         , Msg
         , targetKey
+        , toCode
+        , fromCode
         )
 
 {-| Convenience helpers for working with keyboard inputs.
@@ -32,12 +34,15 @@ module Keyboard.Extra
 
 # Keyboard keys
 @docs Key
+
+# Low level
+@docs fromCode, toCode
 -}
 
 import Keyboard exposing (KeyCode)
 import Dict exposing (Dict)
 import Set exposing (Set)
-import Json.Decode as Json exposing ((:=))
+import Json.Decode as Json
 import Keyboard.Arrows as Arrows exposing (Arrows)
 
 
@@ -200,6 +205,8 @@ pressedDown model =
         |> List.map fromCode
 
 
+{-| Convert a key code into a `Key`.
+-}
 fromCode : KeyCode -> Key
 fromCode code =
     codeDict
@@ -207,6 +214,8 @@ fromCode code =
         |> Maybe.withDefault Other
 
 
+{-| Convert a `Key` into a key code.
+-}
 toCode : Key -> KeyCode
 toCode key =
     codeBook
@@ -226,7 +235,7 @@ toCode key =
 -}
 targetKey : Json.Decoder Key
 targetKey =
-    Json.map fromCode ("keyCode" := Json.int)
+    Json.map fromCode (Json.field "keyCode" Json.int)
 
 
 {-| These are all the keys that have names in `Keyboard.Extra`.
