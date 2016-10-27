@@ -33,11 +33,11 @@ init =
         arr =
             { x = 0, y = 0 }
 
-        ( keyboardModel, keyboardCmd ) =
+        keyboardModel =
             Keyboard.init
     in
         ( Model keyboardModel False arr arr []
-        , Cmd.map KeyboardMsg keyboardCmd
+        , Cmd.none
         )
 
 
@@ -46,7 +46,7 @@ update msg model =
     case msg of
         KeyboardMsg keyMsg ->
             let
-                ( keyboardModel, keyboardCmd ) =
+                keyboardModel =
                     Keyboard.update keyMsg model.keyboardModel
             in
                 ( { model
@@ -56,7 +56,7 @@ update msg model =
                     , wasd = Keyboard.wasd keyboardModel
                     , keyList = Keyboard.pressedDown keyboardModel
                   }
-                , Cmd.map KeyboardMsg keyboardCmd
+                , Cmd.none
                 )
 
 

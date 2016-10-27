@@ -71,14 +71,14 @@ type alias Model =
 
 {-| Use this to initialize the component.
 -}
-init : ( Model, Cmd Msg )
+init : Model
 init =
-    ( Model Set.empty, Cmd.none )
+    Model Set.empty
 
 
 {-| You need to call this to have the component update.
 -}
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> Model -> Model
 update msg model =
     case msg of
         Down code ->
@@ -86,14 +86,14 @@ update msg model =
                 keysDown =
                     Set.insert code model.keysDown
             in
-                { model | keysDown = keysDown } ! []
+                { model | keysDown = keysDown }
 
         Up code ->
             let
                 keysDown =
                     Set.remove code model.keysDown
             in
-                { model | keysDown = keysDown } ! []
+                { model | keysDown = keysDown }
 
 
 {-| Gives the arrow keys' pressed down state as follows:
