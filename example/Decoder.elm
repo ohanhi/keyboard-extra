@@ -2,12 +2,11 @@ module Main exposing (..)
 
 import Html exposing (..)
 import Html.Events exposing (on)
-import Html.App as Html
 import Keyboard.Extra as Keyboard
 import Json.Decode as Json
 
 
-main : Program Never
+main : Program Never Model Msg
 main =
     Html.beginnerProgram
         { model = init

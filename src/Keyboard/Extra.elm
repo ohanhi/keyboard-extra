@@ -219,8 +219,8 @@ fromCode code =
 toCode : Key -> KeyCode
 toCode key =
     codeBook
-        |> List.filter (((==) key) << snd)
-        |> List.map fst
+        |> List.filter (((==) key) << Tuple.second)
+        |> List.map Tuple.first
         |> List.head
         |> Maybe.withDefault 0
 
