@@ -28,11 +28,11 @@ type alias Model =
 init : ( Model, Cmd Msg )
 init =
     let
-        ( keyboardModel, keyboardCmd ) =
+        keyboardModel =
             Keyboard.init
     in
         ( Model keyboardModel Keyboard.NoDirection Keyboard.NoDirection
-        , Cmd.map KeyboardMsg keyboardCmd
+        , Cmd.none
         )
 
 
@@ -41,7 +41,7 @@ update msg model =
     case msg of
         KeyboardMsg keyMsg ->
             let
-                ( keyboardModel, keyboardCmd ) =
+                keyboardModel =
                     Keyboard.update keyMsg model.keyboardModel
             in
                 ( { model
@@ -49,7 +49,7 @@ update msg model =
                     , arrows = Keyboard.arrowsDirection keyboardModel
                     , wasd = Keyboard.wasdDirection keyboardModel
                   }
-                , Cmd.map KeyboardMsg keyboardCmd
+                , Cmd.none
                 )
 
 

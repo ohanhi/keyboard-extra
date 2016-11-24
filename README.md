@@ -37,17 +37,14 @@ Initialize the component
 init : ( Model, Cmd Msg )
 init =
     let
-        ( keyboardModel, keyboardCmd ) =
+        keyboardModel =
             Keyboard.Extra.init
     in
         ( { keyboardModel = keyboardModel
           , otherThing = 0
           -- ...
           }
-        , Cmd.batch
-            [ Cmd.map KeyboardExtraMsg keyboardCmd
-            -- ..
-            ]
+        , Cmd.none
         )
 ```
 
@@ -69,11 +66,11 @@ update msg model =
     case msg of
         KeyboardExtraMsg keyMsg ->
             let
-                ( keyboardModel, keyboardCmd ) =
+                keyboardModel=
                     Keyboard.Extra.update keyMsg model.keyboardModel
             in
                 ( { model | keyboardModel = keyboardModel }
-                , Cmd.map KeyboardMsg keyboardCmd
+                , Cmd.none
                 )
         -- ...
 ```
