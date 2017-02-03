@@ -73,7 +73,7 @@ update msg model =
                     Keyboard.Extra.update keyMsg model.keyboardModel
             in
                 ( { model | keyboardModel = keyboardModel }
-                , Cmd.map KeyboardMsg keyboardCmd
+                , Cmd.map KeyboardExtraMsg keyboardCmd
                 )
         -- ...
 ```
