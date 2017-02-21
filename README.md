@@ -77,3 +77,5 @@ subscriptions model =
         ]
 
 ```
+
+**PS.** This example shows how to use `updateWithKeyChange` to keep track of the changes in the pressed down keys: [Tracking Key Changes](https://github.com/ohanhi/keyboard-extra/blob/master/example/TrackingKeyChanges.elm).

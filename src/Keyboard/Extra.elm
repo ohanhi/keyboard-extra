@@ -2,6 +2,7 @@ module Keyboard.Extra
     exposing
         ( subscriptions
         , update
+        , updateWithKeyChange
         , model
         , isPressed
         , arrows
@@ -11,6 +12,7 @@ module Keyboard.Extra
         , pressedDown
         , Direction(..)
         , Key(..)
+        , KeyChange(..)
         , Model
         , Msg
         , targetKey
@@ -27,7 +29,7 @@ module Keyboard.Extra
 @docs arrows, wasd, Direction, arrowsDirection, wasdDirection
 
 # Wiring
-@docs Model, Msg, subscriptions, model, update
+@docs Model, Msg, subscriptions, model, update, KeyChange, updateWithKeyChange
 
 # Decoder
 @docs targetKey
@@ -53,6 +55,14 @@ type Msg
     | Up KeyCode
 
 
+{-| The second value `updateWithKeyChange` returns, representing the actual
+change that happened during the update.
+-}
+type KeyChange
+    = KeyDown Key
+    | KeyUp Key
+
+
 {-| You will need to add this to your program's subscriptions.
 -}
 subscriptions : Sub Msg
@@ -71,29 +81,62 @@ type alias Model =
 
 {-| Use this to initialize the component.
 -}
-init : ( Model, Cmd Msg )
-init =
-    ( Model Set.empty, Cmd.none )
+model : Model
+model =
+    Model Set.empty
 
 
-{-| You need to call this to have the component update.
+{-| You need to call this (or `updateWithKeyChange`) to have the set of pressed
+down keys update. If you want to know exactly what changed just now, have a look
+at the `updateWithKeyChange`.
 -}
-update : Msg -> Model -> ( Model, Cmd Msg )
+update : Msg -> Model -> Model
 update msg model =
+    case msg of
+        Down code ->
+            { model | keysDown = Set.insert code model.keysDown }
+
+        Up code ->
+            { model | keysDown = Set.remove code model.keysDown }
+
+
+{-| You need to call this (or `update`) to have the set of keys update.
+
+This variant of an update function answers the question: "Did the pressed down
+keys in fact change just now?"
+
+You might be wondering why this is a `Maybe KeyChange` &ndash; it's because
+`keydown` events happen many times per second when you hold down a key. Thus,
+not all incoming messages actually cause a change in the model.
+-}
+updateWithKeyChange : Msg -> Model -> ( Model, Maybe KeyChange )
+updateWithKeyChange msg model =
     case msg of
         Down code ->
             let
                 keysDown =
                     Set.insert code model.keysDown
+
+                change =
+                    if Set.size keysDown /= Set.size model.keysDown then
+                        Just (KeyDown (fromCode code))
+                    else
+                        Nothing
             in
-                { model | keysDown = keysDown } ! []
+                ( { model | keysDown = keysDown }, change )
 
         Up code ->
             let
                 keysDown =
                     Set.remove code model.keysDown
+
+                change =
+                    if Set.size keysDown /= Set.size model.keysDown then
+                        Just (KeyUp (fromCode code))
+                    else
+                        Nothing
             in
-                { model | keysDown = keysDown } ! []
+                ( { model | keysDown = keysDown }, change )
 
 
 {-| Gives the arrow keys' pressed down state as follows:
