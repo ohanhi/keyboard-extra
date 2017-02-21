@@ -32,12 +32,9 @@ init =
     let
         arr =
             { x = 0, y = 0 }
-
-        ( keyboardModel, keyboardCmd ) =
-            Keyboard.init
     in
-        ( Model keyboardModel False arr arr []
-        , Cmd.map KeyboardMsg keyboardCmd
+        ( Model Keyboard.model False arr arr []
+        , Cmd.none
         )
 
 
@@ -46,7 +43,7 @@ update msg model =
     case msg of
         KeyboardMsg keyMsg ->
             let
-                ( keyboardModel, keyboardCmd ) =
+                keyboardModel =
                     Keyboard.update keyMsg model.keyboardModel
             in
                 ( { model
@@ -56,7 +53,7 @@ update msg model =
                     , wasd = Keyboard.wasd keyboardModel
                     , keyList = Keyboard.pressedDown keyboardModel
                   }
-                , Cmd.map KeyboardMsg keyboardCmd
+                , Cmd.none
                 )
 
 
@@ -74,6 +71,4 @@ view model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.batch
-        [ Sub.map KeyboardMsg Keyboard.subscriptions
-        ]
+    Sub.map KeyboardMsg Keyboard.subscriptions

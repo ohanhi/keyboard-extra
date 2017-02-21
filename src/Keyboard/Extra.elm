@@ -2,7 +2,7 @@ module Keyboard.Extra
     exposing
         ( subscriptions
         , update
-        , init
+        , model
         , isPressed
         , arrows
         , wasd
@@ -27,7 +27,7 @@ module Keyboard.Extra
 @docs arrows, wasd, Direction, arrowsDirection, wasdDirection
 
 # Wiring
-@docs Model, Msg, subscriptions, init, update
+@docs Model, Msg, subscriptions, model, update
 
 # Decoder
 @docs targetKey

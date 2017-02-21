@@ -1,15 +1,15 @@
 # Keyboard Extra
 
-Higher level handling for keyboard inputs in Elm 0.17 and 0.18.
+Nice keyboard inputs in Elm.
 
-This library is a standard component following The Elm Architecture.
-
-It is quite tedious to find out the currently pressed down keys with just the `Keyboard` module, so this package aims to make it easier. You can also get some bonus benefits out of this:
+It is quite tedious to find out the currently pressed down keys with just the `Keyboard` module, so this package aims to make it easier. You can also get some additional benefits out of this:
 
 - Keys are named values of the `Key` type, including e.g. `ArrowUp`, `CharA` and `Enter`
 - You can find out whether e.g. `CharC` is pressed down when any `Msg` happens in your program
-- Arrow keys and WASD can be decoded into records similarly to Elm 0.16: `{ x : Int, y : Int }` or as a union type (e.g. `South`, `NorthEast`)
-- You can also get a full list of keys that are pressed down, if you need to
+- Arrow keys and WASD can be used as records similarly to Elm 0.16: `{ x : Int, y : Int }` or as a union type (e.g. `South`, `NorthEast`)
+- You can also get a full list of keys that are pressed down
+
+While this library does not have a view of its own, otherwise it follows The Elm Architecture.
 
 
 # Usage
@@ -20,7 +20,7 @@ In essence, `Keyboard.Extra` is just another component in your program. It has a
 
 ------
 
-Include the model in your component
+Include the Keyboard.Extra model in your program's model
 
 ```elm
 type alias Model =
@@ -28,27 +28,15 @@ type alias Model =
     , otherThing : Int
     -- ...
     }
-```
 
-
-Initialize the component
-
-```elm
 init : ( Model, Cmd Msg )
 init =
-    let
-        ( keyboardModel, keyboardCmd ) =
-            Keyboard.Extra.init
-    in
-        ( { keyboardModel = keyboardModel
-          , otherThing = 0
-          -- ...
-          }
-        , Cmd.batch
-            [ Cmd.map KeyboardExtraMsg keyboardCmd
-            -- ..
-            ]
-        )
+    ( { keyboardModel = Keyboard.Extra.model
+      , otherThing = 0
+      -- ...
+      }
+    , Cmd.none
+    )
 ```
 
 
@@ -69,11 +57,11 @@ update msg model =
     case msg of
         KeyboardExtraMsg keyMsg ->
             let
-                ( keyboardModel, keyboardCmd ) =
+                keyboardModel =
                     Keyboard.Extra.update keyMsg model.keyboardModel
             in
                 ( { model | keyboardModel = keyboardModel }
-                , Cmd.map KeyboardExtraMsg keyboardCmd
+                , Cmd.none
                 )
         -- ...
 ```
