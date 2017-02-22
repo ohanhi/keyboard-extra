@@ -1,7 +1,7 @@
 module TrackingKeyChanges exposing (..)
 
 import Html exposing (Html, div, p, ul, li, text)
-import Keyboard.Extra as Keyboard
+import Keyboard.Extra
 
 
 main : Program Never Model Msg
@@ -15,18 +15,18 @@ main =
 
 
 type Msg
-    = KeyboardMsg Keyboard.Msg
+    = KeyboardMsg Keyboard.Extra.Msg
 
 
 type alias Model =
-    { keyboardModel : Keyboard.Model
-    , keyChanges : List Keyboard.KeyChange
+    { keyboardState : Keyboard.Extra.State
+    , keyChanges : List Keyboard.Extra.KeyChange
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model Keyboard.model []
+    ( Model Keyboard.Extra.initialState []
     , Cmd.none
     )
 
@@ -36,8 +36,8 @@ update msg model =
     case msg of
         KeyboardMsg keyMsg ->
             let
-                ( keyboardModel, maybeKeyChange ) =
-                    Keyboard.updateWithKeyChange keyMsg model.keyboardModel
+                ( keyboardState, maybeKeyChange ) =
+                    Keyboard.Extra.updateWithKeyChange keyMsg model.keyboardState
 
                 keyChanges =
                     case maybeKeyChange of
@@ -48,7 +48,7 @@ update msg model =
                             model.keyChanges
             in
                 ( { model
-                    | keyboardModel = keyboardModel
+                    | keyboardState = keyboardState
                     , keyChanges = keyChanges
                   }
                 , Cmd.none
@@ -72,4 +72,4 @@ keysView model =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    Sub.map KeyboardMsg Keyboard.subscriptions
+    Sub.map KeyboardMsg Keyboard.Extra.subscriptions

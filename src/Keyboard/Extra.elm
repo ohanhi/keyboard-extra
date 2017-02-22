@@ -5,7 +5,7 @@ module Keyboard.Extra
         , downs
         , update
         , updateWithKeyChange
-        , model
+        , initialState
         , isPressed
         , arrows
         , wasd
@@ -15,7 +15,7 @@ module Keyboard.Extra
         , Direction(..)
         , Key(..)
         , KeyChange(..)
-        , Model
+        , State
         , Msg
         , targetKey
         , toCode
@@ -29,7 +29,7 @@ module Keyboard.Extra
 Using Keyboard.Extra this way, you get all the help it can provide.
 You should not use this together with the plain subscriptions.
 
-@docs Model, Msg, subscriptions, model, update, KeyChange, updateWithKeyChange
+@docs State, Msg, subscriptions, initialState, update, KeyChange, updateWithKeyChange
 
 ## Helpers
 @docs isPressed, pressedDown
@@ -101,29 +101,29 @@ subscriptions =
 
 {-| The internal representation of `Keyboard.Extra`. Useful for type annotation.
 -}
-type alias Model =
-    { keysDown : Set KeyCode }
+type State
+    = State (Set KeyCode)
 
 
 {-| Use this to initialize the component.
 -}
-model : Model
-model =
-    Model Set.empty
+initialState : State
+initialState =
+    State Set.empty
 
 
 {-| You need to call this (or `updateWithKeyChange`) to have the set of pressed
 down keys update. If you need to know exactly what changed just now, have a look
 at the `updateWithKeyChange`.
 -}
-update : Msg -> Model -> Model
-update msg model =
+update : Msg -> State -> State
+update msg (State state) =
     case msg of
         Down code ->
-            { model | keysDown = Set.insert code model.keysDown }
+            State (Set.insert code state)
 
         Up code ->
-            { model | keysDown = Set.remove code model.keysDown }
+            State (Set.remove code state)
 
 
 {-| The second value `updateWithKeyChange` may return, representing the actual
@@ -145,34 +145,34 @@ not all incoming messages actually cause a change in the model.
 programs. If you are experiencing slowness or jittering when using
 `updateWithKeyChange`, see if the regular `update` makes it go away.
 -}
-updateWithKeyChange : Msg -> Model -> ( Model, Maybe KeyChange )
-updateWithKeyChange msg model =
+updateWithKeyChange : Msg -> State -> ( State, Maybe KeyChange )
+updateWithKeyChange msg (State state) =
     case msg of
         Down code ->
             let
-                keysDown =
-                    Set.insert code model.keysDown
+                nextState =
+                    Set.insert code state
 
                 change =
-                    if Set.size keysDown /= Set.size model.keysDown then
+                    if Set.size nextState /= Set.size state then
                         Just (KeyDown (fromCode code))
                     else
                         Nothing
             in
-                ( { model | keysDown = keysDown }, change )
+                ( State nextState, change )
 
         Up code ->
             let
-                keysDown =
-                    Set.remove code model.keysDown
+                nextState =
+                    Set.remove code state
 
                 change =
-                    if Set.size keysDown /= Set.size model.keysDown then
+                    if Set.size nextState /= Set.size state then
                         Just (KeyUp (fromCode code))
                     else
                         Nothing
             in
-                ( { model | keysDown = keysDown }, change )
+                ( State nextState, change )
 
 
 {-| Gives the arrow keys' pressed down state as follows:
@@ -182,9 +182,9 @@ updateWithKeyChange msg model =
 - `{ x = 1, y = 1 }` when pressing the up and right arrows.
 - `{ x = 0, y =-1 }` when pressing the down, left, and right arrows (left and right cancel out).
 -}
-arrows : Model -> Arrows
-arrows model =
-    Arrows.determineArrows model.keysDown
+arrows : State -> Arrows
+arrows (State state) =
+    Arrows.determineArrows state
 
 
 {-| Similar to `arrows`, gives the W, A, S and D keys' pressed down state.
@@ -194,9 +194,9 @@ arrows model =
 - `{ x = 1, y = 1 }` when pressing W and D.
 - `{ x = 0, y =-1 }` when pressing A, S and D (A and D cancel out).
 -}
-wasd : Model -> Arrows
-wasd model =
-    Arrows.determineWasd model.keysDown
+wasd : State -> Arrows
+wasd (State state) =
+    Arrows.determineWasd state
 
 
 {-| Type representation of the arrows.
@@ -220,7 +220,7 @@ type Direction
 - `NorthEast` when pressing the up and right arrows.
 - `South` when pressing the down, left, and right arrows (left and right cancel out).
 -}
-arrowsDirection : Model -> Direction
+arrowsDirection : State -> Direction
 arrowsDirection =
     arrowsToDir << arrows
 
@@ -232,7 +232,7 @@ arrowsDirection =
 - `NorthEast` when pressing W and D.
 - `South` when pressing A, S and D (A and D cancel out).
 -}
-wasdDirection : Model -> Direction
+wasdDirection : State -> Direction
 wasdDirection =
     arrowsToDir << wasd
 
@@ -270,16 +270,16 @@ arrowsToDir { x, y } =
 
 {-| Check the pressed down state of any `Key`.
 -}
-isPressed : Key -> Model -> Bool
-isPressed key model =
-    Set.member (toCode key) model.keysDown
+isPressed : Key -> State -> Bool
+isPressed key (State state) =
+    Set.member (toCode key) state
 
 
 {-| Get the full list of keys that are currently pressed down.
 -}
-pressedDown : Model -> List Key
-pressedDown model =
-    model.keysDown
+pressedDown : State -> List Key
+pressedDown (State state) =
+    state
         |> Set.toList
         |> List.map fromCode
 

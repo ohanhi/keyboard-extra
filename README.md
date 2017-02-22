@@ -14,7 +14,7 @@ You can use Keyboard.Extra in two ways:
 
 If you use the "Intelligent Helper" way, you will get the most help, such as:
 
-- All keyboard keys are named values of the `Key` type, including e.g. `ArrowUp`, `CharA` and `Enter`
+- All keyboard keys are named values of the `Key` type, such as `ArrowUp`, `CharA` and `Enter`
 - You can find out whether e.g. `Shift` is pressed down when any kind of a `Msg` happens in your program
 - Arrow keys and WASD can be used as `{ x : Int, y : Int }` or as a union type (e.g. `South`, `NorthEast`)
 - You can also get a full list of keys that are pressed down
@@ -26,22 +26,22 @@ When using the library like this, it follows The Elm Architecture.
 
 There is a full [example module](https://github.com/ohanhi/keyboard-extra/blob/master/example/Main.elm) in the source repository.
 
-In essence, `Keyboard.Extra` is just another component in your program. It has a model, an update function and some subscriptions. Below are the necessary parts to wire things up. Once that is done, you can go and use the helper functions such as [`isPressed`](http://package.elm-lang.org/packages/ohanhi/keyboard-extra/latest/Keyboard-Extra#isPressed), [`arrows`](http://package.elm-lang.org/packages/ohanhi/keyboard-extra/latest/Keyboard-Extra#arrows) and [`arrowsDirection`](http://package.elm-lang.org/packages/ohanhi/keyboard-extra/latest/Keyboard-Extra#arrowsDirection). Have fun! :)
+In essence, `Keyboard.Extra` is just another component in your program. It has a model (called `State`), an `update` function and some `subscriptions`. Below are the necessary parts to wire things up. Once that is done, you can get useful information using the numerous helper functions such as [`isPressed`](http://package.elm-lang.org/packages/ohanhi/keyboard-extra/latest/Keyboard-Extra#isPressed), [`arrows`](http://package.elm-lang.org/packages/ohanhi/keyboard-extra/latest/Keyboard-Extra#arrows) and [`arrowsDirection`](http://package.elm-lang.org/packages/ohanhi/keyboard-extra/latest/Keyboard-Extra#arrowsDirection).
 
 ------
 
-Include the Keyboard.Extra model in your program's model
+Include the Keyboard.Extra state in your program's model
 
 ```elm
 type alias Model =
-    { keyboardModel : Keyboard.Extra.Model
+    { keyboardState : Keyboard.Extra.State
     , otherThing : Int
     -- ...
     }
 
 init : ( Model, Cmd Msg )
 init =
-    ( { keyboardModel = Keyboard.Extra.model
+    ( { keyboardState = Keyboard.Extra.initialState
       , otherThing = 0
       -- ...
       }
@@ -55,28 +55,10 @@ Add the message type in your messages
 ```elm
 type Msg
     = KeyboardExtraMsg Keyboard.Extra.Msg
-    | OtherMsg
+    -- ...
 ```
 
-
-Let it update its model
-
-```elm
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case msg of
-        KeyboardExtraMsg keyMsg ->
-            let
-                keyboardModel =
-                    Keyboard.Extra.update keyMsg model.keyboardModel
-            in
-                ( { model | keyboardModel = keyboardModel }
-                , Cmd.none
-                )
-        -- ...
-```
-
-And finally, include the subscriptions for the events to come through
+Include the subscriptions for the events to come through
 
 ```elm
 subscriptions : Model -> Sub Msg
@@ -88,14 +70,45 @@ subscriptions model =
 
 ```
 
-**PS.** This example shows how to use `updateWithKeyChange` to keep track of the changes in the pressed down keys: [Tracking Key Changes](https://github.com/ohanhi/keyboard-extra/blob/master/example/TrackingKeyChanges.elm).
+
+And finally, let it update its model
+
+```elm
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        KeyboardExtraMsg keyMsg ->
+            ( { model | keyboardState = Keyboard.Extra.update keyMsg model.keyboardState }
+            , Cmd.none
+            )
+        -- ...
+```
+
+Now you can get all the information anywhere where you have access to the model, for example like so:
+
+```elm
+calculateSpeed : Model -> Float
+calculateSpeed model =
+    let
+        arrows =
+            Keyboard.Extra.arrows model.keyboardState
+    in
+        model.currentSpeed + arrows.x
+```
+
+
+Have fun! :)
+
+---
+
+**PS.** The [Tracking Key Changes](https://github.com/ohanhi/keyboard-extra/blob/master/example/TrackingKeyChanges.elm) example shows how to use `updateWithKeyChange` to find out exactly which key was pressed down / released on that update cycle.
 
 
 ## Plain Subscriptions
 
-With the plain subscriptions, you get the bare minimum:
+With the "plain subscriptions" way, you get the bare minimum:
 
-- All keyboard keys are named values of the `Key` type, including e.g. `ArrowUp`, `CharA` and `Enter`
+- All keyboard keys are named values of the `Key` type, such as `ArrowUp`, `CharA` and `Enter`
 
 Setting up is very straight-forward, though:
 
