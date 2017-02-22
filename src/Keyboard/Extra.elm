@@ -1,6 +1,8 @@
 module Keyboard.Extra
     exposing
         ( subscriptions
+        , ups
+        , downs
         , update
         , updateWithKeyChange
         , model
@@ -22,20 +24,35 @@ module Keyboard.Extra
 
 {-| Convenience helpers for working with keyboard inputs.
 
-# Helpers
+# Intelligent Helper
+
+Using Keyboard.Extra this way, you get all the help it can provide.
+You should not use this together with the plain subscriptions.
+
+@docs Model, Msg, subscriptions, model, update, KeyChange, updateWithKeyChange
+
+## Helpers
 @docs isPressed, pressedDown
 
-# Directions
+## Directions
 @docs arrows, wasd, Direction, arrowsDirection, wasdDirection
 
-# Wiring
-@docs Model, Msg, subscriptions, model, update, KeyChange, updateWithKeyChange
+
+# Plain Subscriptions
+
+If you prefer to only get "the facts" and do your own handling, use these
+subscriptions. Otherwise, you may be more comfortable with the Intelligent Helper.
+
+@docs downs, ups
+
 
 # Decoder
 @docs targetKey
 
+
 # Keyboard keys
 @docs Key
+
 
 # Low level
 @docs fromCode, toCode
@@ -48,19 +65,28 @@ import Json.Decode as Json
 import Keyboard.Arrows as Arrows exposing (Arrows)
 
 
+{-| Subscription for key down events.
+
+**Note** When the user presses and holds a key, there will be many of these
+messages before the corresponding key up message.
+-}
+downs : (Key -> msg) -> Sub msg
+downs toMsg =
+    Keyboard.downs (toMsg << fromCode)
+
+
+{-| Subscription for key up events.
+-}
+ups : (Key -> msg) -> Sub msg
+ups toMsg =
+    Keyboard.ups (toMsg << fromCode)
+
+
 {-| The message type `Keyboard.Extra` uses.
 -}
 type Msg
     = Down KeyCode
     | Up KeyCode
-
-
-{-| The second value `updateWithKeyChange` returns, representing the actual
-change that happened during the update.
--}
-type KeyChange
-    = KeyDown Key
-    | KeyUp Key
 
 
 {-| You will need to add this to your program's subscriptions.
@@ -87,7 +113,7 @@ model =
 
 
 {-| You need to call this (or `updateWithKeyChange`) to have the set of pressed
-down keys update. If you want to know exactly what changed just now, have a look
+down keys update. If you need to know exactly what changed just now, have a look
 at the `updateWithKeyChange`.
 -}
 update : Msg -> Model -> Model
@@ -100,14 +126,24 @@ update msg model =
             { model | keysDown = Set.remove code model.keysDown }
 
 
-{-| You need to call this (or `update`) to have the set of keys update.
+{-| The second value `updateWithKeyChange` may return, representing the actual
+change that happened during the update.
+-}
+type KeyChange
+    = KeyDown Key
+    | KeyUp Key
 
-This variant of an update function answers the question: "Did the pressed down
+
+{-| This alternate update function answers the question: "Did the pressed down
 keys in fact change just now?"
 
 You might be wondering why this is a `Maybe KeyChange` &ndash; it's because
 `keydown` events happen many times per second when you hold down a key. Thus,
 not all incoming messages actually cause a change in the model.
+
+**Note** This is provided for convenience, and may not perform well in real
+programs. If you are experiencing slowness or jittering when using
+`updateWithKeyChange`, see if the regular `update` makes it go away.
 -}
 updateWithKeyChange : Msg -> Model -> ( Model, Maybe KeyChange )
 updateWithKeyChange msg model =
