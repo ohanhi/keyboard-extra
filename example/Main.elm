@@ -1,7 +1,70 @@
 module Main exposing (..)
 
 import Html exposing (Html, p, ul, li, text)
-import Keyboard.Extra as Keyboard
+import Keyboard.Extra
+
+
+type Msg
+    = KeyboardMsg Keyboard.Extra.Msg
+
+
+{-| We don't need any other info in the model, since we can get everything we
+need using the helpers right in the `view`!
+
+This way we always have a single source of truth, and we don't need to remember
+to do anything special in the update.
+-}
+type alias Model =
+    { keyboardState : Keyboard.Extra.State
+    }
+
+
+init : ( Model, Cmd Msg )
+init =
+    ( Model Keyboard.Extra.initialState
+    , Cmd.none
+    )
+
+
+update : Msg -> Model -> ( Model, Cmd Msg )
+update msg model =
+    case msg of
+        KeyboardMsg keyMsg ->
+            ( { model
+                | keyboardState = Keyboard.Extra.update keyMsg model.keyboardState
+              }
+            , Cmd.none
+            )
+
+
+view : Model -> Html msg
+view model =
+    let
+        shiftPressed =
+            Keyboard.Extra.isPressed Keyboard.Extra.Shift model.keyboardState
+
+        arrows =
+            Keyboard.Extra.arrows model.keyboardState
+
+        wasd =
+            Keyboard.Extra.wasd model.keyboardState
+
+        keyList =
+            Keyboard.Extra.pressedDown model.keyboardState
+    in
+        p []
+            [ text ("Shift: " ++ toString shiftPressed)
+            , p [] [ text ("Arrows: " ++ toString arrows) ]
+            , p [] [ text ("WASD: " ++ toString wasd) ]
+            , p [] [ text "Currently pressed down:" ]
+            , ul []
+                (List.map (\key -> li [] [ text (toString key) ]) keyList)
+            ]
+
+
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    Sub.map KeyboardMsg Keyboard.Extra.subscriptions
 
 
 main : Program Never Model Msg
@@ -12,68 +75,3 @@ main =
         , view = view
         , subscriptions = subscriptions
         }
-
-
-type Msg
-    = KeyboardMsg Keyboard.Msg
-
-
-type alias Model =
-    { keyboardModel : Keyboard.Model
-    , shiftPressed : Bool
-    , arrows : { x : Int, y : Int }
-    , wasd : { x : Int, y : Int }
-    , keyList : List Keyboard.Key
-    }
-
-
-init : ( Model, Cmd Msg )
-init =
-    let
-        arr =
-            { x = 0, y = 0 }
-
-        ( keyboardModel, keyboardCmd ) =
-            Keyboard.init
-    in
-        ( Model keyboardModel False arr arr []
-        , Cmd.map KeyboardMsg keyboardCmd
-        )
-
-
-update : Msg -> Model -> ( Model, Cmd Msg )
-update msg model =
-    case msg of
-        KeyboardMsg keyMsg ->
-            let
-                ( keyboardModel, keyboardCmd ) =
-                    Keyboard.update keyMsg model.keyboardModel
-            in
-                ( { model
-                    | keyboardModel = keyboardModel
-                    , shiftPressed = Keyboard.isPressed Keyboard.Shift keyboardModel
-                    , arrows = Keyboard.arrows keyboardModel
-                    , wasd = Keyboard.wasd keyboardModel
-                    , keyList = Keyboard.pressedDown keyboardModel
-                  }
-                , Cmd.map KeyboardMsg keyboardCmd
-                )
-
-
-view : Model -> Html msg
-view model =
-    p []
-        [ text ("Shift: " ++ toString model.shiftPressed)
-        , p [] [ text ("Arrows: " ++ toString model.arrows) ]
-        , p [] [ text ("WASD: " ++ toString model.wasd) ]
-        , p [] [ text "Currently pressed down:" ]
-        , ul []
-            (List.map (\key -> li [] [ text (toString key) ]) model.keyList)
-        ]
-
-
-subscriptions : Model -> Sub Msg
-subscriptions model =
-    Sub.batch
-        [ Sub.map KeyboardMsg Keyboard.subscriptions
-        ]
