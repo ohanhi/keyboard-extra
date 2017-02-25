@@ -10,6 +10,16 @@ You can use Keyboard.Extra in two ways:
 2. The "Plain Subscriptions" way, where you get subscriptions for keys' down and up events, and handle the rest on your own.
 
 
+## Full examples you can run and play with on Ellie
+
+- [Main example](https://ellie-app.com/tV5xGz4Rsza1/0) shows most of the basic usage
+- [Arrows Direction example](https://ellie-app.com/tYP8nK5cb4a1/0) shows how the `North`, `NorthEast`, etc. directions work
+- [Tracking Key Changes example](https://ellie-app.com/tYS3vBzTTTa1/0) uses `updateWithKeyChange` to show when a key is pressed down and when it is released
+- [Plain Subscriptions example](https://ellie-app.com/tYXXN55P8ba1/0) is for the more experienced Elm users, who wish to get more "down to the metal" with just subscribing to keyboard events
+
+All of the examples are also in the `example` directory in the repository.
+
+
 ## Intelligent Helper
 
 If you use the "Intelligent Helper" way, you will get the most help, such as:
@@ -23,8 +33,6 @@ When using the library like this, it follows The Elm Architecture.
 
 
 ### Set up
-
-There is a full [example module](https://github.com/ohanhi/keyboard-extra/blob/master/example/Main.elm) in the source repository.
 
 In essence, `Keyboard.Extra` is just another component in your program. It has a model (called `State`), an `update` function and some `subscriptions`. Below are the necessary parts to wire things up. Once that is done, you can get useful information using the numerous helper functions such as [`isPressed`](http://package.elm-lang.org/packages/ohanhi/keyboard-extra/latest/Keyboard-Extra#isPressed), [`arrows`](http://package.elm-lang.org/packages/ohanhi/keyboard-extra/latest/Keyboard-Extra#arrows) and [`arrowsDirection`](http://package.elm-lang.org/packages/ohanhi/keyboard-extra/latest/Keyboard-Extra#arrowsDirection).
 
@@ -101,8 +109,7 @@ Have fun! :)
 
 ---
 
-**PS.** The [Tracking Key Changes](https://github.com/ohanhi/keyboard-extra/blob/master/example/TrackingKeyChanges.elm) example shows how to use `updateWithKeyChange` to find out exactly which key was pressed down / released on that update cycle.
-
+**PS.** The [Tracking Key Changes example](https://ellie-app.com/tYS3vBzTTTa1/0) example shows how to use `updateWithKeyChange` to find out exactly which key was pressed down / released on that update cycle.
 
 ## Plain Subscriptions
 
