@@ -1,7 +1,5 @@
 module Keyboard.Arrows exposing (..)
 
-import Set exposing (Set)
-
 
 type alias Arrows =
     { x : Int, y : Int }
@@ -20,12 +18,12 @@ boolToInt bool =
         0
 
 
-determineArrows : Set Int -> Arrows
+determineArrows : List Int -> Arrows
 determineArrows keys =
     let
         toInt key =
             keys
-                |> Set.member key
+                |> List.member key
                 |> boolToInt
 
         x =
@@ -37,12 +35,12 @@ determineArrows keys =
         { x = x, y = y }
 
 
-determineWasd : Set Int -> Arrows
+determineWasd : List Int -> Arrows
 determineWasd keys =
     let
         toInt key =
             keys
-                |> Set.member key
+                |> List.member key
                 |> boolToInt
 
         x =

@@ -60,7 +60,6 @@ subscriptions. Otherwise, you may be more comfortable with the Intelligent Helpe
 
 import Keyboard exposing (KeyCode)
 import Dict exposing (Dict)
-import Set exposing (Set)
 import Json.Decode as Json
 import Keyboard.Arrows as Arrows exposing (Arrows)
 
@@ -102,14 +101,27 @@ subscriptions =
 {-| The internal representation of `Keyboard.Extra`. Useful for type annotation.
 -}
 type State
-    = State (Set KeyCode)
+    = State (List KeyCode)
 
 
 {-| Use this to initialize the component.
 -}
 initialState : State
 initialState =
-    State Set.empty
+    State []
+
+
+insert : KeyCode -> List KeyCode -> List KeyCode
+insert code list =
+    list
+        |> remove code
+        |> (::) code
+
+
+remove : KeyCode -> List KeyCode -> List KeyCode
+remove code list =
+    list
+        |> List.filter ((/=) code)
 
 
 {-| You need to call this (or `updateWithKeyChange`) to have the set of pressed
@@ -120,10 +132,10 @@ update : Msg -> State -> State
 update msg (State state) =
     case msg of
         Down code ->
-            State (Set.insert code state)
+            State (insert code state)
 
         Up code ->
-            State (Set.remove code state)
+            State (remove code state)
 
 
 {-| The second value `updateWithKeyChange` may return, representing the actual
@@ -151,10 +163,10 @@ updateWithKeyChange msg (State state) =
         Down code ->
             let
                 nextState =
-                    Set.insert code state
+                    insert code state
 
                 change =
-                    if Set.size nextState /= Set.size state then
+                    if List.length nextState /= List.length state then
                         Just (KeyDown (fromCode code))
                     else
                         Nothing
@@ -164,10 +176,10 @@ updateWithKeyChange msg (State state) =
         Up code ->
             let
                 nextState =
-                    Set.remove code state
+                    remove code state
 
                 change =
-                    if Set.size nextState /= Set.size state then
+                    if List.length nextState /= List.length state then
                         Just (KeyUp (fromCode code))
                     else
                         Nothing
@@ -272,15 +284,16 @@ arrowsToDir { x, y } =
 -}
 isPressed : Key -> State -> Bool
 isPressed key (State state) =
-    Set.member (toCode key) state
+    List.member (toCode key) state
 
 
 {-| Get the full list of keys that are currently pressed down.
+
+The newest key to go down is the first in the list and so on.
 -}
 pressedDown : State -> List Key
 pressedDown (State state) =
     state
-        |> Set.toList
         |> List.map fromCode
 
 
