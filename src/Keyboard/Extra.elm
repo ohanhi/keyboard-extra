@@ -18,6 +18,7 @@ module Keyboard.Extra
         , State
         , Msg
         , targetKey
+        , forceRelease
         , toCode
         , fromCode
         )
@@ -55,7 +56,7 @@ subscriptions. Otherwise, you may be more comfortable with the Intelligent Helpe
 
 
 # Low level
-@docs fromCode, toCode
+@docs forceRelease, fromCode, toCode
 -}
 
 import Keyboard exposing (KeyCode)
@@ -122,6 +123,29 @@ remove : KeyCode -> List KeyCode -> List KeyCode
 remove code list =
     list
         |> List.filter ((/=) code)
+
+
+{-| There is an issue with keys sticking in the `pressedDown` list in some
+cases. This is a workaround you can try, if you are experiencing this issue:
+https://github.com/ohanhi/keyboard-extra/issues/6
+
+Usign this function you can force the removal of a list of keys. Any keys that
+are not currently pressed down will be ignored.
+
+Note that this may lead to unexpected situations when the user keeps pressing
+on keys involved.
+
+    -- pressedDown state == [ Shift, Control, CharC ]
+    newState = forceRelease [ Shift, CharA ] state
+    -- pressedDown newState == [ Control, CharC ]
+
+-}
+forceRelease : List Key -> State -> State
+forceRelease keyList (State state) =
+    keyList
+        |> List.map toCode
+        |> List.foldl (\toRemove pressed -> remove toRemove pressed) state
+        |> State
 
 
 {-| You need to call this (or `updateWithKeyChange`) to have the set of pressed
