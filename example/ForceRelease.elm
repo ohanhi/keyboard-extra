@@ -2,7 +2,7 @@ module Main exposing (..)
 
 import Html exposing (Html, p, ul, li, text, div, button)
 import Html.Events exposing (onClick)
-import Keyboard.Extra as KeyEx
+import Keyboard.Extra as KeyEx exposing (Key)
 
 
 type Msg
@@ -17,13 +17,13 @@ This way we always have a single source of truth, and we don't need to remember
 to do anything special in the update.
 -}
 type alias Model =
-    { keyboardState : KeyEx.State
+    { pressedKeys : List Key
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model KeyEx.initialState
+    ( Model []
     , Cmd.none
     )
 
@@ -33,14 +33,14 @@ update msg model =
     case msg of
         KeyboardMsg keyMsg ->
             ( { model
-                | keyboardState = KeyEx.update keyMsg model.keyboardState
+                | pressedKeys = KeyEx.update keyMsg model.pressedKeys
               }
             , Cmd.none
             )
 
         ForceRelease ->
             ( { model
-                | keyboardState = KeyEx.forceRelease [ KeyEx.CharA ] model.keyboardState
+                | pressedKeys = KeyEx.forceRelease [ KeyEx.CharA ] model.pressedKeys
               }
             , Cmd.none
             )
@@ -50,16 +50,13 @@ view : Model -> Html Msg
 view model =
     let
         shiftPressed =
-            KeyEx.isPressed KeyEx.Shift model.keyboardState
+            KeyEx.isPressed KeyEx.Shift model.pressedKeys
 
         arrows =
-            KeyEx.arrows model.keyboardState
+            KeyEx.arrows model.pressedKeys
 
         wasd =
-            KeyEx.wasd model.keyboardState
-
-        keyList =
-            KeyEx.pressedDown model.keyboardState
+            KeyEx.wasd model.pressedKeys
     in
         div []
             [ button [ onClick ForceRelease ] [ text "Force release of CharA" ]
@@ -68,7 +65,7 @@ view model =
             , p [] [ text ("WASD: " ++ toString wasd) ]
             , p [] [ text "Currently pressed down:" ]
             , ul []
-                (List.map (\key -> li [] [ text (toString key) ]) keyList)
+                (List.map (\key -> li [] [ text (toString key) ]) model.pressedKeys)
             ]
 
 

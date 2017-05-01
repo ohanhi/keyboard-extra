@@ -4,7 +4,7 @@ import Html exposing (Html, div, p, ul, li, text)
 import Keyboard.Extra exposing (Key)
 
 
-{- Subscribing to keyboard events without the full TEA pattern. -}
+{- Subscribing to keyboard events without the whole model-update -thing. -}
 
 
 subscriptions : Model -> Sub Msg

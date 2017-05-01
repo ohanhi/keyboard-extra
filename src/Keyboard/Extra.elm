@@ -11,11 +11,9 @@ module Keyboard.Extra
         , wasd
         , arrowsDirection
         , wasdDirection
-        , pressedDown
         , Direction(..)
         , Key(..)
         , KeyChange(..)
-        , State
         , Msg
         , targetKey
         , forceRelease
@@ -30,10 +28,10 @@ module Keyboard.Extra
 Using Keyboard.Extra this way, you get all the help it can provide.
 You should not use this together with the plain subscriptions.
 
-@docs State, Msg, subscriptions, initialState, update, KeyChange, updateWithKeyChange
+@docs Msg, subscriptions, initialState, update, KeyChange, updateWithKeyChange
 
 ## Helpers
-@docs isPressed, pressedDown
+@docs isPressed
 
 ## Directions
 @docs arrows, wasd, Direction, arrowsDirection, wasdDirection
@@ -62,13 +60,12 @@ subscriptions. Otherwise, you may be more comfortable with the Intelligent Helpe
 import Keyboard exposing (KeyCode)
 import Dict exposing (Dict)
 import Json.Decode as Json
-import Keyboard.Arrows as Arrows exposing (Arrows)
 
 
 {-| Subscription for key down events.
 
-**Note** When the user presses and holds a key, there will be many of these
-messages before the corresponding key up message.
+**Note** When the user presses and holds a key, there may or may not be many of
+these messages before the corresponding key up message.
 -}
 downs : (Key -> msg) -> Sub msg
 downs toMsg =
@@ -85,8 +82,12 @@ ups toMsg =
 {-| The message type `Keyboard.Extra` uses.
 -}
 type Msg
-    = Down KeyCode
-    | Up KeyCode
+    = Down Key
+    | Up Key
+
+
+type alias Arrows =
+    { x : Int, y : Int }
 
 
 {-| You will need to add this to your program's subscriptions.
@@ -94,32 +95,26 @@ type Msg
 subscriptions : Sub Msg
 subscriptions =
     Sub.batch
-        [ Keyboard.downs Down
-        , Keyboard.ups Up
+        [ Keyboard.downs (Down << fromCode)
+        , Keyboard.ups (Up << fromCode)
         ]
-
-
-{-| The internal representation of `Keyboard.Extra`. Useful for type annotation.
--}
-type State
-    = State (List KeyCode)
 
 
 {-| Use this to initialize the component.
 -}
-initialState : State
+initialState : List Key
 initialState =
-    State []
+    []
 
 
-insert : KeyCode -> List KeyCode -> List KeyCode
+insert : Key -> List Key -> List Key
 insert code list =
     list
         |> remove code
         |> (::) code
 
 
-remove : KeyCode -> List KeyCode -> List KeyCode
+remove : Key -> List Key -> List Key
 remove code list =
     list
         |> List.filter ((/=) code)
@@ -129,7 +124,7 @@ remove code list =
 cases. This is a workaround you can try, if you are experiencing this issue:
 https://github.com/ohanhi/keyboard-extra/issues/6
 
-Usign this function you can force the removal of a list of keys. Any keys that
+Using this function you can force the removal of a list of keys. Any keys that
 are not currently pressed down will be ignored.
 
 Note that this may lead to unexpected situations when the user keeps pressing
@@ -140,26 +135,24 @@ on keys involved.
     -- pressedDown newState == [ Control, CharC ]
 
 -}
-forceRelease : List Key -> State -> State
-forceRelease keyList (State state) =
+forceRelease : List Key -> List Key -> List Key
+forceRelease keyList state =
     keyList
-        |> List.map toCode
         |> List.foldl (\toRemove pressed -> remove toRemove pressed) state
-        |> State
 
 
 {-| You need to call this (or `updateWithKeyChange`) to have the set of pressed
 down keys update. If you need to know exactly what changed just now, have a look
 at the `updateWithKeyChange`.
 -}
-update : Msg -> State -> State
-update msg (State state) =
+update : Msg -> List Key -> List Key
+update msg state =
     case msg of
-        Down code ->
-            State (insert code state)
+        Down key ->
+            insert key state
 
-        Up code ->
-            State (remove code state)
+        Up key ->
+            remove key state
 
 
 {-| The second value `updateWithKeyChange` may return, representing the actual
@@ -181,34 +174,34 @@ not all incoming messages actually cause a change in the model.
 programs. If you are experiencing slowness or jittering when using
 `updateWithKeyChange`, see if the regular `update` makes it go away.
 -}
-updateWithKeyChange : Msg -> State -> ( State, Maybe KeyChange )
-updateWithKeyChange msg (State state) =
+updateWithKeyChange : Msg -> List Key -> ( List Key, Maybe KeyChange )
+updateWithKeyChange msg state =
     case msg of
-        Down code ->
+        Down key ->
             let
                 nextState =
-                    insert code state
+                    insert key state
 
                 change =
                     if List.length nextState /= List.length state then
-                        Just (KeyDown (fromCode code))
+                        Just (KeyDown key)
                     else
                         Nothing
             in
-                ( State nextState, change )
+                ( nextState, change )
 
-        Up code ->
+        Up key ->
             let
                 nextState =
-                    remove code state
+                    remove key state
 
                 change =
                     if List.length nextState /= List.length state then
-                        Just (KeyUp (fromCode code))
+                        Just (KeyUp key)
                     else
                         Nothing
             in
-                ( State nextState, change )
+                ( nextState, change )
 
 
 {-| Gives the arrow keys' pressed down state as follows:
@@ -218,9 +211,21 @@ updateWithKeyChange msg (State state) =
 - `{ x = 1, y = 1 }` when pressing the up and right arrows.
 - `{ x = 0, y =-1 }` when pressing the down, left, and right arrows (left and right cancel out).
 -}
-arrows : State -> Arrows
-arrows (State state) =
-    Arrows.determineArrows state
+arrows : List Key -> Arrows
+arrows keys =
+    let
+        toInt key =
+            keys
+                |> List.member key
+                |> boolToInt
+
+        x =
+            (toInt ArrowRight) - (toInt ArrowLeft)
+
+        y =
+            (toInt ArrowUp) - (toInt ArrowDown)
+    in
+        { x = x, y = y }
 
 
 {-| Similar to `arrows`, gives the W, A, S and D keys' pressed down state.
@@ -230,9 +235,21 @@ arrows (State state) =
 - `{ x = 1, y = 1 }` when pressing W and D.
 - `{ x = 0, y =-1 }` when pressing A, S and D (A and D cancel out).
 -}
-wasd : State -> Arrows
-wasd (State state) =
-    Arrows.determineWasd state
+wasd : List Key -> Arrows
+wasd keys =
+    let
+        toInt key =
+            keys
+                |> List.member key
+                |> boolToInt
+
+        x =
+            (toInt CharD) - (toInt CharA)
+
+        y =
+            (toInt CharW) - (toInt CharS)
+    in
+        { x = x, y = y }
 
 
 {-| Type representation of the arrows.
@@ -256,7 +273,7 @@ type Direction
 - `NorthEast` when pressing the up and right arrows.
 - `South` when pressing the down, left, and right arrows (left and right cancel out).
 -}
-arrowsDirection : State -> Direction
+arrowsDirection : List Key -> Direction
 arrowsDirection =
     arrowsToDir << arrows
 
@@ -268,7 +285,7 @@ arrowsDirection =
 - `NorthEast` when pressing W and D.
 - `South` when pressing A, S and D (A and D cancel out).
 -}
-wasdDirection : State -> Direction
+wasdDirection : List Key -> Direction
 wasdDirection =
     arrowsToDir << wasd
 
@@ -306,19 +323,9 @@ arrowsToDir { x, y } =
 
 {-| Check the pressed down state of any `Key`.
 -}
-isPressed : Key -> State -> Bool
-isPressed key (State state) =
-    List.member (toCode key) state
-
-
-{-| Get the full list of keys that are currently pressed down.
-
-The newest key to go down is the first in the list and so on.
--}
-pressedDown : State -> List Key
-pressedDown (State state) =
-    state
-        |> List.map fromCode
+isPressed : Key -> List Key -> Bool
+isPressed key state =
+    List.member key state
 
 
 {-| Convert a key code into a `Key`.
@@ -352,6 +359,14 @@ toCode key =
 targetKey : Json.Decoder Key
 targetKey =
     Json.map fromCode (Json.field "keyCode" Json.int)
+
+
+boolToInt : Bool -> Int
+boolToInt bool =
+    if bool then
+        1
+    else
+        0
 
 
 {-| These are all the keys that have names in `Keyboard.Extra`.

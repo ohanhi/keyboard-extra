@@ -1,7 +1,7 @@
 module VisualArrows exposing (..)
 
 import Html exposing (Html, p, div, text)
-import Keyboard.Extra
+import Keyboard.Extra exposing (Key)
 
 
 main : Program Never Model Msg
@@ -19,7 +19,7 @@ type Msg
 
 
 type alias Model =
-    { keyboardState : Keyboard.Extra.State
+    { pressedKeys : List Key
     , arrows : Keyboard.Extra.Direction
     , wasd : Keyboard.Extra.Direction
     }
@@ -37,7 +37,7 @@ update msg model =
     case msg of
         KeyboardMsg keyMsg ->
             ( { model
-                | keyboardState = Keyboard.Extra.update keyMsg model.keyboardState
+                | pressedKeys = Keyboard.Extra.update keyMsg model.pressedKeys
               }
             , Cmd.none
             )
@@ -47,10 +47,10 @@ view : Model -> Html msg
 view model =
     let
         arrows =
-            Keyboard.Extra.arrowsDirection model.keyboardState
+            Keyboard.Extra.arrowsDirection model.pressedKeys
 
         wasd =
-            Keyboard.Extra.wasdDirection model.keyboardState
+            Keyboard.Extra.wasdDirection model.pressedKeys
     in
         div []
             [ p [] [ text ("Arrows: " ++ toString arrows) ]

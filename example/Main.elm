@@ -1,7 +1,7 @@
 module Main exposing (..)
 
 import Html exposing (Html, p, ul, li, text)
-import Keyboard.Extra
+import Keyboard.Extra exposing (Key(..))
 
 
 type Msg
@@ -15,13 +15,13 @@ This way we always have a single source of truth, and we don't need to remember
 to do anything special in the update.
 -}
 type alias Model =
-    { keyboardState : Keyboard.Extra.State
+    { pressedKeys : List Key
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model Keyboard.Extra.initialState
+    ( { pressedKeys = [] }
     , Cmd.none
     )
 
@@ -31,7 +31,7 @@ update msg model =
     case msg of
         KeyboardMsg keyMsg ->
             ( { model
-                | keyboardState = Keyboard.Extra.update keyMsg model.keyboardState
+                | pressedKeys = Keyboard.Extra.update keyMsg model.pressedKeys
               }
             , Cmd.none
             )
@@ -41,16 +41,13 @@ view : Model -> Html msg
 view model =
     let
         shiftPressed =
-            Keyboard.Extra.isPressed Keyboard.Extra.Shift model.keyboardState
+            Keyboard.Extra.isPressed Shift model.pressedKeys
 
         arrows =
-            Keyboard.Extra.arrows model.keyboardState
+            Keyboard.Extra.arrows model.pressedKeys
 
         wasd =
-            Keyboard.Extra.wasd model.keyboardState
-
-        keyList =
-            Keyboard.Extra.pressedDown model.keyboardState
+            Keyboard.Extra.wasd model.pressedKeys
     in
         p []
             [ text ("Shift: " ++ toString shiftPressed)
@@ -58,7 +55,7 @@ view model =
             , p [] [ text ("WASD: " ++ toString wasd) ]
             , p [] [ text "Currently pressed down:" ]
             , ul []
-                (List.map (\key -> li [] [ text (toString key) ]) keyList)
+                (List.map (\key -> li [] [ text (toString key) ]) model.pressedKeys)
             ]
 
 
