@@ -40,7 +40,7 @@ update msg model =
 
         ForceRelease ->
             ( { model
-                | pressedKeys = KeyEx.forceRelease [ KeyEx.CharA ] model.pressedKeys
+                | pressedKeys = List.filter ((/=) KeyEx.CharA) model.pressedKeys
               }
             , Cmd.none
             )
