@@ -12,10 +12,10 @@ You can use Keyboard.Extra in two ways:
 
 ## Full examples you can run and play with on Ellie
 
-- [Main example](https://ellie-app.com/tV5xGz4Rsza1/0) shows most of the basic usage
-- [Arrows Direction example](https://ellie-app.com/tYP8nK5cb4a1/0) shows how the `North`, `NorthEast`, etc. directions work
-- [Tracking Key Changes example](https://ellie-app.com/tYS3vBzTTTa1/0) uses `updateWithKeyChange` to show when a key is pressed down and when it is released
-- [Plain Subscriptions example](https://ellie-app.com/tYXXN55P8ba1/0) is for the more experienced Elm users, who wish to get more "down to the metal" with just subscribing to keyboard events
+- [Main example](https://ellie-app.com/35nXQ7RH9Pfa1/1) shows most of the basic usage
+- [Arrows Direction example](https://ellie-app.com/35nZJ9mySNja1/1) shows how the `North`, `NorthEast`, etc. directions work
+- [Tracking Key Changes example](https://ellie-app.com/35p38pmpWHda1/0) uses `updateWithKeyChange` to show when a key is pressed down and when it is released
+- [Plain Subscriptions example](https://ellie-app.com/35p4fKmqrtwa1/0) is for the more experienced Elm users, who wish to get more "down to the metal" with just subscribing to keyboard events
 
 All of the examples are also in the `example` directory in the repository.
 
