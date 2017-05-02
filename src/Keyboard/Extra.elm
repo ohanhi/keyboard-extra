@@ -5,8 +5,7 @@ module Keyboard.Extra
         , downs
         , update
         , updateWithKeyChange
-        , initialState
-        , isPressed
+        , Arrows
         , arrows
         , wasd
         , arrowsDirection
@@ -27,13 +26,13 @@ module Keyboard.Extra
 Using Keyboard.Extra this way, you get all the help it can provide.
 You should not use this together with the plain subscriptions.
 
-@docs Msg, subscriptions, initialState, update, KeyChange, updateWithKeyChange
+@docs Msg, subscriptions, update, KeyChange, updateWithKeyChange
 
 ## Helpers
-@docs isPressed
 
-## Directions
-@docs arrows, wasd, Direction, arrowsDirection, wasdDirection
+> **Note:** To find out if a key is being pressed, simply use `List.member key keyList`.
+
+@docs Arrows, arrows, wasd, Direction, arrowsDirection, wasdDirection
 
 
 # Plain Subscriptions
@@ -48,12 +47,12 @@ subscriptions. Otherwise, you may be more comfortable with the Intelligent Helpe
 @docs targetKey
 
 
-# Keyboard keys
-@docs Key
-
-
 # Low level
 @docs fromCode, toCode
+
+
+# Keyboard keys
+@docs Key
 -}
 
 import Keyboard exposing (KeyCode)
@@ -85,6 +84,9 @@ type Msg
     | Up Key
 
 
+{-| Record type used for `arrows` and `wasd`.
+Both `x` and `y` can range from `-1` to `1`, and are `0` if no keys are pressed.
+-}
 type alias Arrows =
     { x : Int, y : Int }
 
@@ -97,13 +99,6 @@ subscriptions =
         [ Keyboard.downs (Down << fromCode)
         , Keyboard.ups (Up << fromCode)
         ]
-
-
-{-| Use this to initialize the component.
--}
-initialState : List Key
-initialState =
-    []
 
 
 insert : Key -> List Key -> List Key
@@ -297,14 +292,6 @@ arrowsToDir { x, y } =
 
         _ ->
             NoDirection
-
-
-{-| Check the pressed down state of any `Key`.
-This is really just using `List.member`.
--}
-isPressed : Key -> List Key -> Bool
-isPressed key state =
-    List.member key state
 
 
 {-| Convert a key code into a `Key`.

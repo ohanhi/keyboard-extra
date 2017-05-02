@@ -97,6 +97,11 @@ calculateSpeed model =
             Keyboard.Extra.arrows model.pressedKeys
     in
         model.currentSpeed + arrows.x
+
+
+isShooting : Model -> Bool
+isShooting model =
+    List.member Space model.pressedKeys
 ```
 
 
