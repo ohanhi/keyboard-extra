@@ -3,6 +3,7 @@ module Main exposing (..)
 import Html exposing (Html, p, ul, li, text, div, button)
 import Html.Events exposing (onClick)
 import Keyboard.Extra as KeyEx exposing (Key)
+import Style
 
 
 type Msg
@@ -48,25 +49,12 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    let
-        shiftPressed =
-            KeyEx.isPressed KeyEx.Shift model.pressedKeys
-
-        arrows =
-            KeyEx.arrows model.pressedKeys
-
-        wasd =
-            KeyEx.wasd model.pressedKeys
-    in
-        div []
-            [ button [ onClick ForceRelease ] [ text "Force release of CharA" ]
-            , text ("Shift: " ++ toString shiftPressed)
-            , p [] [ text ("Arrows: " ++ toString arrows) ]
-            , p [] [ text ("WASD: " ++ toString wasd) ]
-            , p [] [ text "Currently pressed down:" ]
-            , ul []
-                (List.map (\key -> li [] [ text (toString key) ]) model.pressedKeys)
-            ]
+    div [ Style.container ]
+        [ p [] [ button [ onClick ForceRelease ] [ text "Force release of CharA" ] ]
+        , p [] [ text "Currently pressed down:" ]
+        , ul []
+            (List.map (\key -> li [] [ text (toString key) ]) model.pressedKeys)
+        ]
 
 
 subscriptions : Model -> Sub Msg

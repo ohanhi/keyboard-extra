@@ -2,6 +2,7 @@ module TrackingKeyChanges exposing (..)
 
 import Html exposing (Html, div, p, ul, li, text)
 import Keyboard.Extra exposing (Key(..))
+import Style
 
 
 main : Program Never Model Msg
@@ -57,7 +58,7 @@ update msg model =
 
 view : Model -> Html msg
 view model =
-    div []
+    div [ Style.container ]
         [ p [] [ text "Try pressing, releasing and long-pressing keys." ]
         , keysView model
         ]

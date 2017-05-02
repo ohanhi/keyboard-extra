@@ -4,6 +4,7 @@ import Html exposing (..)
 import Html.Events exposing (on)
 import Keyboard.Extra as Keyboard
 import Json.Decode as Json
+import Style
 
 
 main : Program Never Model Msg
@@ -37,7 +38,7 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    div []
+    div [ Style.container ]
         [ p [] [ text "Enter text below:" ]
         , textarea [ on "keydown" <| Json.map KeyPress Keyboard.targetKey ] []
         , p [] [ text <| toString model ]

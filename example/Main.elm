@@ -1,7 +1,8 @@
 module Main exposing (..)
 
-import Html exposing (Html, p, ul, li, text)
+import Html exposing (Html, div, p, ul, li, text)
 import Keyboard.Extra exposing (Key(..))
+import Style
 
 
 type Msg
@@ -41,7 +42,7 @@ view : Model -> Html msg
 view model =
     let
         shiftPressed =
-            Keyboard.Extra.isPressed Shift model.pressedKeys
+            List.member Shift model.pressedKeys
 
         arrows =
             Keyboard.Extra.arrows model.pressedKeys
@@ -49,7 +50,7 @@ view model =
         wasd =
             Keyboard.Extra.wasd model.pressedKeys
     in
-        p []
+        div [ Style.container ]
             [ text ("Shift: " ++ toString shiftPressed)
             , p [] [ text ("Arrows: " ++ toString arrows) ]
             , p [] [ text ("WASD: " ++ toString wasd) ]
