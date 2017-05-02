@@ -2,7 +2,8 @@ module Main exposing (..)
 
 import Html exposing (Html, p, ul, li, text, div, button)
 import Html.Events exposing (onClick)
-import Keyboard.Extra as KeyEx
+import Keyboard.Extra as KeyEx exposing (Key)
+import Style
 
 
 type Msg
@@ -17,13 +18,13 @@ This way we always have a single source of truth, and we don't need to remember
 to do anything special in the update.
 -}
 type alias Model =
-    { keyboardState : KeyEx.State
+    { pressedKeys : List Key
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model KeyEx.initialState
+    ( Model []
     , Cmd.none
     )
 
@@ -33,14 +34,14 @@ update msg model =
     case msg of
         KeyboardMsg keyMsg ->
             ( { model
-                | keyboardState = KeyEx.update keyMsg model.keyboardState
+                | pressedKeys = KeyEx.update keyMsg model.pressedKeys
               }
             , Cmd.none
             )
 
         ForceRelease ->
             ( { model
-                | keyboardState = KeyEx.forceRelease [ KeyEx.CharA ] model.keyboardState
+                | pressedKeys = List.filter ((/=) KeyEx.CharA) model.pressedKeys
               }
             , Cmd.none
             )
@@ -48,28 +49,12 @@ update msg model =
 
 view : Model -> Html Msg
 view model =
-    let
-        shiftPressed =
-            KeyEx.isPressed KeyEx.Shift model.keyboardState
-
-        arrows =
-            KeyEx.arrows model.keyboardState
-
-        wasd =
-            KeyEx.wasd model.keyboardState
-
-        keyList =
-            KeyEx.pressedDown model.keyboardState
-    in
-        div []
-            [ button [ onClick ForceRelease ] [ text "Force release of CharA" ]
-            , text ("Shift: " ++ toString shiftPressed)
-            , p [] [ text ("Arrows: " ++ toString arrows) ]
-            , p [] [ text ("WASD: " ++ toString wasd) ]
-            , p [] [ text "Currently pressed down:" ]
-            , ul []
-                (List.map (\key -> li [] [ text (toString key) ]) keyList)
-            ]
+    div [ Style.container ]
+        [ p [] [ button [ onClick ForceRelease ] [ text "Force release of CharA" ] ]
+        , p [] [ text "Currently pressed down:" ]
+        , ul []
+            (List.map (\key -> li [] [ text (toString key) ]) model.pressedKeys)
+        ]
 
 
 subscriptions : Model -> Sub Msg

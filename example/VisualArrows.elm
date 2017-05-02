@@ -1,7 +1,9 @@
 module VisualArrows exposing (..)
 
 import Html exposing (Html, p, div, text)
-import Keyboard.Extra
+import Html.Attributes exposing (style)
+import Keyboard.Extra exposing (Key, Direction(..))
+import Style
 
 
 main : Program Never Model Msg
@@ -19,15 +21,13 @@ type Msg
 
 
 type alias Model =
-    { keyboardState : Keyboard.Extra.State
-    , arrows : Keyboard.Extra.Direction
-    , wasd : Keyboard.Extra.Direction
+    { pressedKeys : List Key
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model Keyboard.Extra.initialState Keyboard.Extra.NoDirection Keyboard.Extra.NoDirection
+    ( Model []
     , Cmd.none
     )
 
@@ -37,7 +37,7 @@ update msg model =
     case msg of
         KeyboardMsg keyMsg ->
             ( { model
-                | keyboardState = Keyboard.Extra.update keyMsg model.keyboardState
+                | pressedKeys = Keyboard.Extra.update keyMsg model.pressedKeys
               }
             , Cmd.none
             )
@@ -47,15 +47,83 @@ view : Model -> Html msg
 view model =
     let
         arrows =
-            Keyboard.Extra.arrowsDirection model.keyboardState
+            Keyboard.Extra.arrowsDirection model.pressedKeys
 
         wasd =
-            Keyboard.Extra.wasdDirection model.keyboardState
+            Keyboard.Extra.wasdDirection model.pressedKeys
     in
-        div []
-            [ p [] [ text ("Arrows: " ++ toString arrows) ]
-            , p [] [ text ("WASD: " ++ toString wasd) ]
+        div [ Style.container ]
+            [ div []
+                [ p [] [ text ("Arrows: " ++ toString arrows) ]
+                , directionView arrows
+                ]
+            , div
+                []
+                [ p [] [ text ("WASD: " ++ toString wasd) ]
+                , directionView wasd
+                ]
             ]
+
+
+directionView : Direction -> Html msg
+directionView direction =
+    let
+        angle =
+            directionToAngle direction
+                |> toString
+
+        char =
+            case direction of
+                NoDirection ->
+                    "🞄"
+
+                _ ->
+                    "↑"
+    in
+        p
+            [ style
+                [ ( "transform", "rotate(" ++ angle ++ "rad)" )
+                , ( "width", "1em" )
+                , ( "height", "1em" )
+                , ( "line-height", "1" )
+                , ( "text-align", "center" )
+                , ( "margin", "auto" )
+                , ( "font-size", "10em" )
+                ]
+            ]
+            [ text char
+            ]
+
+
+directionToAngle : Direction -> Float
+directionToAngle direction =
+    case direction of
+        North ->
+            0
+
+        NorthEast ->
+            pi * 0.25
+
+        East ->
+            pi * 0.5
+
+        SouthEast ->
+            pi * 0.75
+
+        South ->
+            pi * 1
+
+        SouthWest ->
+            pi * 1.25
+
+        West ->
+            pi * 1.5
+
+        NorthWest ->
+            pi * 1.75
+
+        NoDirection ->
+            0
 
 
 subscriptions : Model -> Sub Msg

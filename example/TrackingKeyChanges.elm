@@ -1,7 +1,8 @@
 module TrackingKeyChanges exposing (..)
 
 import Html exposing (Html, div, p, ul, li, text)
-import Keyboard.Extra
+import Keyboard.Extra exposing (Key(..))
+import Style
 
 
 main : Program Never Model Msg
@@ -19,14 +20,14 @@ type Msg
 
 
 type alias Model =
-    { keyboardState : Keyboard.Extra.State
+    { pressedKeys : List Key
     , keyChanges : List Keyboard.Extra.KeyChange
     }
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( Model Keyboard.Extra.initialState []
+    ( Model [] []
     , Cmd.none
     )
 
@@ -36,8 +37,8 @@ update msg model =
     case msg of
         KeyboardMsg keyMsg ->
             let
-                ( keyboardState, maybeKeyChange ) =
-                    Keyboard.Extra.updateWithKeyChange keyMsg model.keyboardState
+                ( pressedKeys, maybeKeyChange ) =
+                    Keyboard.Extra.updateWithKeyChange keyMsg model.pressedKeys
 
                 keyChanges =
                     case maybeKeyChange of
@@ -48,7 +49,7 @@ update msg model =
                             model.keyChanges
             in
                 ( { model
-                    | keyboardState = keyboardState
+                    | pressedKeys = pressedKeys
                     , keyChanges = keyChanges
                   }
                 , Cmd.none
@@ -57,7 +58,7 @@ update msg model =
 
 view : Model -> Html msg
 view model =
-    div []
+    div [ Style.container ]
         [ p [] [ text "Try pressing, releasing and long-pressing keys." ]
         , keysView model
         ]

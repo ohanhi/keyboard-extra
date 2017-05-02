@@ -2,9 +2,10 @@ module PlainSubscriptions exposing (..)
 
 import Html exposing (Html, div, p, ul, li, text)
 import Keyboard.Extra exposing (Key)
+import Style
 
 
-{- Subscribing to keyboard events without the full TEA pattern. -}
+{- Subscribing to keyboard events without the whole model-update -thing. -}
 
 
 subscriptions : Model -> Sub Msg
@@ -51,7 +52,7 @@ update msg model =
 
 view : Model -> Html msg
 view model =
-    div []
+    div [ Style.container ]
         [ p [] [ text "Try pressing, releasing and long-pressing keys." ]
         , keysView model
         ]
