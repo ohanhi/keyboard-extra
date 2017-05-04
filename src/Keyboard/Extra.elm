@@ -179,10 +179,21 @@ updateWithKeyChange msg state =
 
 {-| Gives the arrow keys' pressed down state as follows:
 
-- `{ x = 0, y = 0 }` when pressing no arrows.
-- `{ x =-1, y = 0 }` when pressing the left arrow.
-- `{ x = 1, y = 1 }` when pressing the up and right arrows.
-- `{ x = 0, y =-1 }` when pressing the down, left, and right arrows (left and right cancel out).
+when pressing no arrows
+    >>> arrows []
+    { x = 0, y = 0 }
+
+when pressing the left arrow
+    >>> arrows [ ArrowLeft ]
+    { x = -1, y = 0 }
+
+when pressing the up and right arrows
+    >>> arrows [ ArrowUp, ArrowRight ]
+    { x = 1, y = 1 }
+
+when pressing the down, left, and right arrows (left and right cancel out)
+    >>> arrows [ ArrowDown, ArrowLeft, ArrowRight ]
+    { x = 0, y = -1 }
 -}
 arrows : List Key -> Arrows
 arrows keys =
@@ -203,10 +214,21 @@ arrows keys =
 
 {-| Similar to `arrows`, gives the W, A, S and D keys' pressed down state.
 
-- `{ x = 0, y = 0 }` when pressing none of W, A, S and D.
-- `{ x =-1, y = 0 }` when pressing A.
-- `{ x = 1, y = 1 }` when pressing W and D.
-- `{ x = 0, y =-1 }` when pressing A, S and D (A and D cancel out).
+when pressing none of WASD
+    >>> wasd []
+    { x = 0, y = 0 }
+
+when pressing A
+    >>> wasd [ CharA ]
+    { x = -1, y = 0 }
+
+when pressing W and D
+    >>> wasd [ CharW, CharD ]
+    { x = 1, y = 1 }
+
+when pressing A, S and D (A and D cancel out)
+    >>> wasd [ CharA, CharS, CharD ]
+    { x = 0, y = -1 }
 -}
 wasd : List Key -> Arrows
 wasd keys =
@@ -241,10 +263,21 @@ type Direction
 
 {-| Gives the arrow keys' pressed down state as follows:
 
-- `None` when pressing no arrows.
-- `West` when pressing the left arrow.
-- `NorthEast` when pressing the up and right arrows.
-- `South` when pressing the down, left, and right arrows (left and right cancel out).
+when pressing no arrows
+    >>> arrowsDirection []
+    NoDirection
+
+when pressing the left arrow
+    >>> arrowsDirection [ ArrowLeft ]
+    West
+
+when pressing the up and right arrows
+    >>> arrowsDirection [ ArrowUp, ArrowRight ]
+    NorthEast
+
+when pressing the down, left, and right arrows (left and right cancel out)
+    >>> arrowsDirection [ ArrowDown, ArrowLeft, ArrowRight ]
+    South
 -}
 arrowsDirection : List Key -> Direction
 arrowsDirection =
@@ -253,10 +286,21 @@ arrowsDirection =
 
 {-| Similar to `arrows`, gives the W, A, S and D keys' pressed down state.
 
-- `None` when pressing none of W, A, S and D.
-- `West` when pressing A.
-- `NorthEast` when pressing W and D.
-- `South` when pressing A, S and D (A and D cancel out).
+when pressing none of WASD
+    >>> wasdDirection []
+    NoDirection
+
+when pressing A
+    >>> wasdDirection [ CharA ]
+    West
+
+when pressing W and D
+    >>> wasdDirection [ CharW, CharD ]
+    NorthEast
+
+when pressing A, S and D (A and D cancel out)
+    >>> wasdDirection [ CharA, CharS, CharD ]
+    South
 -}
 wasdDirection : List Key -> Direction
 wasdDirection =
@@ -295,6 +339,9 @@ arrowsToDir { x, y } =
 
 
 {-| Convert a key code into a `Key`.
+
+    >>> fromCode 13
+    Enter
 -}
 fromCode : KeyCode -> Key
 fromCode code =
@@ -304,6 +351,9 @@ fromCode code =
 
 
 {-| Convert a `Key` into a key code.
+
+    >>> toCode Enter
+    13
 -}
 toCode : Key -> KeyCode
 toCode key =
