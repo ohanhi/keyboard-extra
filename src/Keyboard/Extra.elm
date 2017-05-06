@@ -21,12 +21,12 @@ module Keyboard.Extra
 
 {-| Convenience helpers for working with keyboard inputs.
 
-# Intelligent Helper
+# Msg and Update
 
 Using Keyboard.Extra this way, you get all the help it can provide.
-You should not use this together with the plain subscriptions.
+Use either this approach, or the plain subscriptions and handle the state yourself.
 
-@docs Msg, subscriptions, update, KeyChange, updateWithKeyChange
+@docs Msg, subscriptions, update, updateWithKeyChange, KeyChange
 
 ## Helpers
 
@@ -38,7 +38,7 @@ You should not use this together with the plain subscriptions.
 # Plain Subscriptions
 
 If you prefer to only get "the facts" and do your own handling, use these
-subscriptions. Otherwise, you may be more comfortable with the Intelligent Helper.
+subscriptions. Otherwise, you may be more comfortable with the Msg and Update.
 
 @docs downs, ups
 
@@ -77,7 +77,7 @@ ups toMsg =
     Keyboard.ups (toMsg << fromCode)
 
 
-{-| The message type `Keyboard.Extra` uses.
+{-| `Keyboard.Extra`'s internal message type.
 -}
 type Msg
     = Down Key
@@ -91,7 +91,7 @@ type alias Arrows =
     { x : Int, y : Int }
 
 
-{-| You will need to add this to your program's subscriptions.
+{-| The subscriptions needed for the "Msg and Update" way.
 -}
 subscriptions : Sub Msg
 subscriptions =
@@ -114,9 +114,10 @@ remove code list =
         |> List.filter ((/=) code)
 
 
-{-| You need to call this (or `updateWithKeyChange`) to have the set of pressed
-down keys update. If you need to know exactly what changed just now, have a look
-at the `updateWithKeyChange`.
+{-| Use this (or `updateWithKeyChange`) to have the list of keys update.
+
+_If you need to know exactly what changed just now, have a look
+at `updateWithKeyChange`._
 -}
 update : Msg -> List Key -> List Key
 update msg state =
