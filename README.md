@@ -6,7 +6,7 @@ It is quite tedious to find out the currently pressed down keys with just the `K
 
 You can use Keyboard.Extra in two ways:
 
-1. The "Intelligent Helper" way, which has some setting up to do but has a bunch of ways to help you get the information you need.
+1. The "Msg and Update" way, which has some setting up to do but has a bunch of ways to help you get the information you need.
 2. The "Plain Subscriptions" way, where you get subscriptions for keys' down and up events, and handle the rest on your own.
 
 
@@ -20,16 +20,16 @@ You can use Keyboard.Extra in two ways:
 All of the examples are also in the `example` directory in the repository.
 
 
-## Intelligent Helper
+## Msg and Update
 
-If you use the "Intelligent Helper" way, you will get the most help, such as:
+If you use the "Msg and Update" way, you will get the most help, such as:
 
 - All keyboard keys are named values of the `Key` type, such as `ArrowUp`, `CharA` and `Enter`
 - You can find out whether e.g. `Shift` is pressed down when any kind of a `Msg` happens in your program
 - Arrow keys and WASD can be used as `{ x : Int, y : Int }` or as a union type (e.g. `South`, `NorthEast`)
 - You can also get a full list of keys that are pressed down
 
-When using Keyboard.Extra like this, it follows The Elm Architecture. Its model is a list of keys, and it has an `update` function and some `subscriptions`. Below are the necessary parts to wire things up. Once that is done, you can get useful information using the numerous helper functions such as [`isPressed`](http://package.elm-lang.org/packages/ohanhi/keyboard-extra/latest/Keyboard-Extra#isPressed), [`arrows`](http://package.elm-lang.org/packages/ohanhi/keyboard-extra/latest/Keyboard-Extra#arrows) and [`arrowsDirection`](http://package.elm-lang.org/packages/ohanhi/keyboard-extra/latest/Keyboard-Extra#arrowsDirection).
+When using Keyboard.Extra like this, it follows The Elm Architecture. Its model is a list of keys, and it has an `update` function and some `subscriptions`. Below are the necessary parts to wire things up. Once that is done, you can get useful information using the helper functions such as [`arrows`](http://package.elm-lang.org/packages/ohanhi/keyboard-extra/latest/Keyboard-Extra#arrows) and [`arrowsDirection`](http://package.elm-lang.org/packages/ohanhi/keyboard-extra/latest/Keyboard-Extra#arrowsDirection).
 
 ------
 

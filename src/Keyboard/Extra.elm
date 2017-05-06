@@ -21,12 +21,12 @@ module Keyboard.Extra
 
 {-| Convenience helpers for working with keyboard inputs.
 
-# Intelligent Helper
+# Msg and Update
 
 Using Keyboard.Extra this way, you get all the help it can provide.
-You should not use this together with the plain subscriptions.
+Use either this approach, or the plain subscriptions and handle the state yourself.
 
-@docs Msg, subscriptions, update, KeyChange, updateWithKeyChange
+@docs Msg, subscriptions, update, updateWithKeyChange, KeyChange
 
 ## Helpers
 
@@ -38,7 +38,7 @@ You should not use this together with the plain subscriptions.
 # Plain Subscriptions
 
 If you prefer to only get "the facts" and do your own handling, use these
-subscriptions. Otherwise, you may be more comfortable with the Intelligent Helper.
+subscriptions. Otherwise, you may be more comfortable with the Msg and Update.
 
 @docs downs, ups
 
@@ -77,7 +77,7 @@ ups toMsg =
     Keyboard.ups (toMsg << fromCode)
 
 
-{-| The message type `Keyboard.Extra` uses.
+{-| `Keyboard.Extra`'s internal message type.
 -}
 type Msg
     = Down Key
@@ -91,7 +91,7 @@ type alias Arrows =
     { x : Int, y : Int }
 
 
-{-| You will need to add this to your program's subscriptions.
+{-| The subscriptions needed for the "Msg and Update" way.
 -}
 subscriptions : Sub Msg
 subscriptions =
@@ -114,9 +114,10 @@ remove code list =
         |> List.filter ((/=) code)
 
 
-{-| You need to call this (or `updateWithKeyChange`) to have the set of pressed
-down keys update. If you need to know exactly what changed just now, have a look
-at the `updateWithKeyChange`.
+{-| Use this (or `updateWithKeyChange`) to have the list of keys update.
+
+_If you need to know exactly what changed just now, have a look
+at `updateWithKeyChange`._
 -}
 update : Msg -> List Key -> List Key
 update msg state =
@@ -179,10 +180,17 @@ updateWithKeyChange msg state =
 
 {-| Gives the arrow keys' pressed down state as follows:
 
-- `{ x = 0, y = 0 }` when pressing no arrows.
-- `{ x =-1, y = 0 }` when pressing the left arrow.
-- `{ x = 1, y = 1 }` when pressing the up and right arrows.
-- `{ x = 0, y =-1 }` when pressing the down, left, and right arrows (left and right cancel out).
+    >>> arrows []
+    { x = 0, y = 0 }
+
+    >>> arrows [ ArrowLeft ]
+    { x = -1, y = 0 }
+
+    >>> arrows [ ArrowUp, ArrowRight ]
+    { x = 1, y = 1 }
+
+    >>> arrows [ ArrowDown, ArrowLeft, ArrowRight ]
+    { x = 0, y = -1 }
 -}
 arrows : List Key -> Arrows
 arrows keys =
@@ -203,10 +211,17 @@ arrows keys =
 
 {-| Similar to `arrows`, gives the W, A, S and D keys' pressed down state.
 
-- `{ x = 0, y = 0 }` when pressing none of W, A, S and D.
-- `{ x =-1, y = 0 }` when pressing A.
-- `{ x = 1, y = 1 }` when pressing W and D.
-- `{ x = 0, y =-1 }` when pressing A, S and D (A and D cancel out).
+    >>> wasd []
+    { x = 0, y = 0 }
+
+    >>> wasd [ CharA ]
+    { x = -1, y = 0 }
+
+    >>> wasd [ CharW, CharD ]
+    { x = 1, y = 1 }
+
+    >>> wasd [ CharA, CharS, CharD ]
+    { x = 0, y = -1 }
 -}
 wasd : List Key -> Arrows
 wasd keys =
@@ -241,10 +256,17 @@ type Direction
 
 {-| Gives the arrow keys' pressed down state as follows:
 
-- `None` when pressing no arrows.
-- `West` when pressing the left arrow.
-- `NorthEast` when pressing the up and right arrows.
-- `South` when pressing the down, left, and right arrows (left and right cancel out).
+    >>> arrowsDirection []
+    NoDirection
+
+    >>> arrowsDirection [ ArrowLeft ]
+    West
+
+    >>> arrowsDirection [ ArrowUp, ArrowRight ]
+    NorthEast
+
+    >>> arrowsDirection [ ArrowDown, ArrowLeft, ArrowRight ]
+    South
 -}
 arrowsDirection : List Key -> Direction
 arrowsDirection =
@@ -253,10 +275,17 @@ arrowsDirection =
 
 {-| Similar to `arrows`, gives the W, A, S and D keys' pressed down state.
 
-- `None` when pressing none of W, A, S and D.
-- `West` when pressing A.
-- `NorthEast` when pressing W and D.
-- `South` when pressing A, S and D (A and D cancel out).
+    >>> wasdDirection []
+    NoDirection
+
+    >>> wasdDirection [ CharA ]
+    West
+
+    >>> wasdDirection [ CharW, CharD ]
+    NorthEast
+
+    >>> wasdDirection [ CharA, CharS, CharD ]
+    South
 -}
 wasdDirection : List Key -> Direction
 wasdDirection =
@@ -295,6 +324,9 @@ arrowsToDir { x, y } =
 
 
 {-| Convert a key code into a `Key`.
+
+    >>> fromCode 13
+    Enter
 -}
 fromCode : KeyCode -> Key
 fromCode code =
@@ -304,6 +336,9 @@ fromCode code =
 
 
 {-| Convert a `Key` into a key code.
+
+    >>> toCode Enter
+    13
 -}
 toCode : Key -> KeyCode
 toCode key =
