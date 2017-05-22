@@ -13,7 +13,7 @@ module Keyboard.Extra
         , Direction(..)
         , Key(..)
         , KeyChange(..)
-        , Msg
+        , Msg(..)
         , targetKey
         , toCode
         , fromCode
@@ -116,6 +116,9 @@ remove code list =
 
 {-| Use this (or `updateWithKeyChange`) to have the list of keys update.
 
+    >>> update (Up Super) [ Super, CharA ]
+    []
+
 _If you need to know exactly what changed just now, have a look
 at `updateWithKeyChange`._
 -}
@@ -126,7 +129,9 @@ update msg state =
             insert key state
 
         Up key ->
-            remove key state
+            case key == Super of
+                True -> []
+                False -> remove key state
 
 
 {-| The second value `updateWithKeyChange` may return, representing the actual
@@ -139,6 +144,9 @@ type KeyChange
 
 {-| This alternate update function answers the question: "Did the pressed down
 keys in fact change just now?"
+
+    >>> updateWithKeyChange (Up Super) [ Super, CharA ]
+    ( [], Just (KeyUp Super) )
 
 You might be wondering why this is a `Maybe KeyChange` &ndash; it's because
 `keydown` events happen many times per second when you hold down a key. Thus,
@@ -167,7 +175,9 @@ updateWithKeyChange msg state =
         Up key ->
             let
                 nextState =
-                    remove key state
+                    case key == Super of
+                        True -> []
+                        False -> remove key state
 
                 change =
                     if List.length nextState /= List.length state then
