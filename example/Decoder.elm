@@ -2,8 +2,8 @@ module Main exposing (..)
 
 import Html exposing (..)
 import Html.Events exposing (on)
-import Keyboard.Extra as Keyboard
 import Json.Decode as Json
+import Keyboard.Extra as Keyboard
 import Style
 
 

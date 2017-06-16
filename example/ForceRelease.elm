@@ -1,6 +1,6 @@
 module Main exposing (..)
 
-import Html exposing (Html, p, ul, li, text, div, button)
+import Html exposing (Html, button, div, li, p, text, ul)
 import Html.Events exposing (onClick)
 import Keyboard.Extra as KeyEx exposing (Key)
 import Style
@@ -16,6 +16,7 @@ need using the helpers right in the `view`!
 
 This way we always have a single source of truth, and we don't need to remember
 to do anything special in the update.
+
 -}
 type alias Model =
     { pressedKeys : List Key

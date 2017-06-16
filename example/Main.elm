@@ -1,6 +1,6 @@
 module Main exposing (..)
 
-import Html exposing (Html, div, p, ul, li, text)
+import Html exposing (Html, div, li, p, text, ul)
 import Keyboard.Extra exposing (Key(..))
 import Style
 
@@ -14,6 +14,7 @@ need using the helpers right in the `view`!
 
 This way we always have a single source of truth, and we don't need to remember
 to do anything special in the update.
+
 -}
 type alias Model =
     { pressedKeys : List Key
@@ -50,14 +51,14 @@ view model =
         wasd =
             Keyboard.Extra.wasd model.pressedKeys
     in
-        div [ Style.container ]
-            [ text ("Shift: " ++ toString shiftPressed)
-            , p [] [ text ("Arrows: " ++ toString arrows) ]
-            , p [] [ text ("WASD: " ++ toString wasd) ]
-            , p [] [ text "Currently pressed down:" ]
-            , ul []
-                (List.map (\key -> li [] [ text (toString key) ]) model.pressedKeys)
-            ]
+    div [ Style.container ]
+        [ text ("Shift: " ++ toString shiftPressed)
+        , p [] [ text ("Arrows: " ++ toString arrows) ]
+        , p [] [ text ("WASD: " ++ toString wasd) ]
+        , p [] [ text "Currently pressed down:" ]
+        , ul []
+            (List.map (\key -> li [] [ text (toString key) ]) model.pressedKeys)
+        ]
 
 
 subscriptions : Model -> Sub Msg

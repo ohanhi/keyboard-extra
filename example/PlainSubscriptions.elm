@@ -1,6 +1,6 @@
 module PlainSubscriptions exposing (..)
 
-import Html exposing (Html, div, p, ul, li, text)
+import Html exposing (Html, div, li, p, text, ul)
 import Keyboard.Extra exposing (Key)
 import Style
 
@@ -45,7 +45,7 @@ init =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    ( { model | events = (toString msg) :: model.events }
+    ( { model | events = toString msg :: model.events }
     , Cmd.none
     )
 
