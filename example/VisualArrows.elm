@@ -1,8 +1,8 @@
 module VisualArrows exposing (..)
 
-import Html exposing (Html, p, div, text)
+import Html exposing (Html, div, p, text)
 import Html.Attributes exposing (style)
-import Keyboard.Extra exposing (Key, Direction(..))
+import Keyboard.Extra exposing (Direction(..), Key)
 import Style
 
 
@@ -52,17 +52,17 @@ view model =
         wasd =
             Keyboard.Extra.wasdDirection model.pressedKeys
     in
-        div [ Style.container ]
-            [ div []
-                [ p [] [ text ("Arrows: " ++ toString arrows) ]
-                , directionView arrows
-                ]
-            , div
-                []
-                [ p [] [ text ("WASD: " ++ toString wasd) ]
-                , directionView wasd
-                ]
+    div [ Style.container ]
+        [ div []
+            [ p [] [ text ("Arrows: " ++ toString arrows) ]
+            , directionView arrows
             ]
+        , div
+            []
+            [ p [] [ text ("WASD: " ++ toString wasd) ]
+            , directionView wasd
+            ]
+        ]
 
 
 directionView : Direction -> Html msg
@@ -80,19 +80,19 @@ directionView direction =
                 _ ->
                     "↑"
     in
-        p
-            [ style
-                [ ( "transform", "rotate(" ++ angle ++ "rad)" )
-                , ( "width", "1em" )
-                , ( "height", "1em" )
-                , ( "line-height", "1" )
-                , ( "text-align", "center" )
-                , ( "margin", "auto" )
-                , ( "font-size", "10em" )
-                ]
+    p
+        [ style
+            [ ( "transform", "rotate(" ++ angle ++ "rad)" )
+            , ( "width", "1em" )
+            , ( "height", "1em" )
+            , ( "line-height", "1" )
+            , ( "text-align", "center" )
+            , ( "margin", "auto" )
+            , ( "font-size", "10em" )
             ]
-            [ text char
-            ]
+        ]
+        [ text char
+        ]
 
 
 directionToAngle : Direction -> Float

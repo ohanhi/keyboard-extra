@@ -1,6 +1,6 @@
 module TrackingKeyChanges exposing (..)
 
-import Html exposing (Html, div, p, ul, li, text)
+import Html exposing (Html, div, li, p, text, ul)
 import Keyboard.Extra exposing (Key(..))
 import Style
 
@@ -48,12 +48,12 @@ update msg model =
                         Nothing ->
                             model.keyChanges
             in
-                ( { model
-                    | pressedKeys = pressedKeys
-                    , keyChanges = keyChanges
-                  }
-                , Cmd.none
-                )
+            ( { model
+                | pressedKeys = pressedKeys
+                , keyChanges = keyChanges
+              }
+            , Cmd.none
+            )
 
 
 view : Model -> Html msg

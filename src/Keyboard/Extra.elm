@@ -1,25 +1,26 @@
 module Keyboard.Extra
     exposing
-        ( subscriptions
-        , ups
-        , downs
-        , update
-        , updateWithKeyChange
-        , Arrows
-        , arrows
-        , wasd
-        , arrowsDirection
-        , wasdDirection
+        ( Arrows
         , Direction(..)
         , Key(..)
         , KeyChange(..)
         , Msg
+        , arrows
+        , arrowsDirection
+        , downs
+        , fromCode
+        , subscriptions
         , targetKey
         , toCode
-        , fromCode
+        , update
+        , updateWithKeyChange
+        , ups
+        , wasd
+        , wasdDirection
         )
 
 {-| Convenience helpers for working with keyboard inputs.
+
 
 # Msg and Update
 
@@ -27,6 +28,7 @@ Using Keyboard.Extra this way, you get all the help it can provide.
 Use either this approach, or the plain subscriptions and handle the state yourself.
 
 @docs Msg, subscriptions, update, updateWithKeyChange, KeyChange
+
 
 ## Helpers
 
@@ -44,26 +46,31 @@ subscriptions. Otherwise, you may be more comfortable with the Msg and Update.
 
 
 # Decoder
+
 @docs targetKey
 
 
 # Low level
+
 @docs fromCode, toCode
 
 
 # Keyboard keys
+
 @docs Key
+
 -}
 
-import Keyboard exposing (KeyCode)
 import Dict exposing (Dict)
 import Json.Decode as Json
+import Keyboard exposing (KeyCode)
 
 
 {-| Subscription for key down events.
 
 **Note** When the user presses and holds a key, there may or may not be many of
 these messages before the corresponding key up message.
+
 -}
 downs : (Key -> msg) -> Sub msg
 downs toMsg =
@@ -118,6 +125,7 @@ remove code list =
 
 _If you need to know exactly what changed just now, have a look
 at `updateWithKeyChange`._
+
 -}
 update : Msg -> List Key -> List Key
 update msg state =
@@ -147,6 +155,7 @@ not all incoming messages actually cause a change in the model.
 **Note** This is provided for convenience, and may not perform well in real
 programs. If you are experiencing slowness or jittering when using
 `updateWithKeyChange`, see if the regular `update` makes it go away.
+
 -}
 updateWithKeyChange : Msg -> List Key -> ( List Key, Maybe KeyChange )
 updateWithKeyChange msg state =
@@ -162,7 +171,7 @@ updateWithKeyChange msg state =
                     else
                         Nothing
             in
-                ( nextState, change )
+            ( nextState, change )
 
         Up key ->
             let
@@ -175,22 +184,20 @@ updateWithKeyChange msg state =
                     else
                         Nothing
             in
-                ( nextState, change )
+            ( nextState, change )
 
 
 {-| Gives the arrow keys' pressed down state as follows:
 
-    >>> arrows []
-    { x = 0, y = 0 }
+    arrows []                      --> { x = 0, y = 0 }
 
-    >>> arrows [ ArrowLeft ]
-    { x = -1, y = 0 }
+    arrows [ ArrowLeft ]           --> { x = -1, y = 0 }
 
-    >>> arrows [ ArrowUp, ArrowRight ]
-    { x = 1, y = 1 }
+    arrows [ ArrowUp, ArrowRight ] --> { x = 1, y = 1 }
 
-    >>> arrows [ ArrowDown, ArrowLeft, ArrowRight ]
-    { x = 0, y = -1 }
+    arrows [ ArrowDown, ArrowLeft, ArrowRight ]
+                                   --> { x = 0, y = -1 }
+
 -}
 arrows : List Key -> Arrows
 arrows keys =
@@ -201,27 +208,24 @@ arrows keys =
                 |> boolToInt
 
         x =
-            (toInt ArrowRight) - (toInt ArrowLeft)
+            toInt ArrowRight - toInt ArrowLeft
 
         y =
-            (toInt ArrowUp) - (toInt ArrowDown)
+            toInt ArrowUp - toInt ArrowDown
     in
-        { x = x, y = y }
+    { x = x, y = y }
 
 
 {-| Similar to `arrows`, gives the W, A, S and D keys' pressed down state.
 
-    >>> wasd []
-    { x = 0, y = 0 }
+    wasd []                      --> { x = 0, y = 0 }
 
-    >>> wasd [ CharA ]
-    { x = -1, y = 0 }
+    wasd [ CharA ]               --> { x = -1, y = 0 }
 
-    >>> wasd [ CharW, CharD ]
-    { x = 1, y = 1 }
+    wasd [ CharW, CharD ]        --> { x = 1, y = 1 }
 
-    >>> wasd [ CharA, CharS, CharD ]
-    { x = 0, y = -1 }
+    wasd [ CharA, CharS, CharD ] --> { x = 0, y = -1 }
+
 -}
 wasd : List Key -> Arrows
 wasd keys =
@@ -232,12 +236,12 @@ wasd keys =
                 |> boolToInt
 
         x =
-            (toInt CharD) - (toInt CharA)
+            toInt CharD - toInt CharA
 
         y =
-            (toInt CharW) - (toInt CharS)
+            toInt CharW - toInt CharS
     in
-        { x = x, y = y }
+    { x = x, y = y }
 
 
 {-| Type representation of the arrows.
@@ -256,17 +260,15 @@ type Direction
 
 {-| Gives the arrow keys' pressed down state as follows:
 
-    >>> arrowsDirection []
-    NoDirection
+    arrowsDirection []                      --> NoDirection
 
-    >>> arrowsDirection [ ArrowLeft ]
-    West
+    arrowsDirection [ ArrowLeft ]           --> West
 
-    >>> arrowsDirection [ ArrowUp, ArrowRight ]
-    NorthEast
+    arrowsDirection [ ArrowUp, ArrowRight ] --> NorthEast
 
-    >>> arrowsDirection [ ArrowDown, ArrowLeft, ArrowRight ]
-    South
+    arrowsDirection [ ArrowDown, ArrowLeft, ArrowRight ]
+                                            --> South
+
 -}
 arrowsDirection : List Key -> Direction
 arrowsDirection =
@@ -275,17 +277,14 @@ arrowsDirection =
 
 {-| Similar to `arrows`, gives the W, A, S and D keys' pressed down state.
 
-    >>> wasdDirection []
-    NoDirection
+    wasdDirection []                      --> NoDirection
 
-    >>> wasdDirection [ CharA ]
-    West
+    wasdDirection [ CharA ]               --> West
 
-    >>> wasdDirection [ CharW, CharD ]
-    NorthEast
+    wasdDirection [ CharW, CharD ]        --> NorthEast
 
-    >>> wasdDirection [ CharA, CharS, CharD ]
-    South
+    wasdDirection [ CharA, CharS, CharD ] --> South
+
 -}
 wasdDirection : List Key -> Direction
 wasdDirection =
@@ -325,8 +324,8 @@ arrowsToDir { x, y } =
 
 {-| Convert a key code into a `Key`.
 
-    >>> fromCode 13
-    Enter
+    fromCode 13 --> Enter
+
 -}
 fromCode : KeyCode -> Key
 fromCode code =
@@ -337,13 +336,13 @@ fromCode code =
 
 {-| Convert a `Key` into a key code.
 
-    >>> toCode Enter
-    13
+    toCode Enter --> 13
+
 -}
 toCode : Key -> KeyCode
 toCode key =
     codeBook
-        |> List.filter (((==) key) << Tuple.second)
+        |> List.filter ((==) key << Tuple.second)
         |> List.map Tuple.first
         |> List.head
         |> Maybe.withDefault 0
@@ -355,7 +354,8 @@ toCode key =
 
     onKey : (Key -> msg) -> Attribute msg
     onKey tagger =
-      on "keydown" (Json.map tagger targetKey)
+        on "keydown" (Json.map tagger targetKey)
+
 -}
 targetKey : Json.Decoder Key
 targetKey =
