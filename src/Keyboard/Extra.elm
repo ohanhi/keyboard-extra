@@ -196,7 +196,7 @@ updateWithKeyChange msg state =
     arrows [ ArrowUp, ArrowRight ] --> { x = 1, y = 1 }
 
     arrows [ ArrowDown, ArrowLeft, ArrowRight ]
-    --> { x = 0, y = -1 }
+                                   --> { x = 0, y = -1 }
 
 -}
 arrows : List Key -> Arrows
@@ -267,7 +267,7 @@ type Direction
     arrowsDirection [ ArrowUp, ArrowRight ] --> NorthEast
 
     arrowsDirection [ ArrowDown, ArrowLeft, ArrowRight ]
-    --> South
+                                            --> South
 
 -}
 arrowsDirection : List Key -> Direction
