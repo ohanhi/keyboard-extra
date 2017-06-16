@@ -189,13 +189,14 @@ updateWithKeyChange msg state =
 
 {-| Gives the arrow keys' pressed down state as follows:
 
-    arrows []                                   --> { x = 0, y = 0 }
+    arrows []                      --> { x = 0, y = 0 }
 
-    arrows [ ArrowLeft ]                        --> { x = -1, y = 0 }
+    arrows [ ArrowLeft ]           --> { x = -1, y = 0 }
 
-    arrows [ ArrowUp, ArrowRight ]              --> { x = 1, y = 1 }
+    arrows [ ArrowUp, ArrowRight ] --> { x = 1, y = 1 }
 
-    arrows [ ArrowDown, ArrowLeft, ArrowRight ] --> { x = 0, y = -1 }
+    arrows [ ArrowDown, ArrowLeft, ArrowRight ]
+                                   --> { x = 0, y = -1 }
 
 -}
 arrows : List Key -> Arrows
@@ -265,8 +266,8 @@ type Direction
 
     arrowsDirection [ ArrowUp, ArrowRight ] --> NorthEast
 
-    arrowsDirection [ ArrowDown, ArrowLeft, ArrowRight ] --> South
-    -- (left and right cancel out)
+    arrowsDirection [ ArrowDown, ArrowLeft, ArrowRight ]
+                                            --> South
 
 -}
 arrowsDirection : List Key -> Direction
