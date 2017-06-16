@@ -189,17 +189,14 @@ updateWithKeyChange msg state =
 
 {-| Gives the arrow keys' pressed down state as follows:
 
-    >>> arrows []
-    { x = 0, y = 0 }
+    arrows []                      --> { x = 0, y = 0 }
 
-    >>> arrows [ ArrowLeft ]
-    { x = -1, y = 0 }
+    arrows [ ArrowLeft ]           --> { x = -1, y = 0 }
 
-    >>> arrows [ ArrowUp, ArrowRight ]
-    { x = 1, y = 1 }
+    arrows [ ArrowUp, ArrowRight ] --> { x = 1, y = 1 }
 
-    >>> arrows [ ArrowDown, ArrowLeft, ArrowRight ]
-    { x = 0, y = -1 }
+    arrows [ ArrowDown, ArrowLeft, ArrowRight ]
+    --> { x = 0, y = -1 }
 
 -}
 arrows : List Key -> Arrows
@@ -221,17 +218,13 @@ arrows keys =
 
 {-| Similar to `arrows`, gives the W, A, S and D keys' pressed down state.
 
-    >>> wasd []
-    { x = 0, y = 0 }
+    wasd []                      --> { x = 0, y = 0 }
 
-    >>> wasd [ CharA ]
-    { x = -1, y = 0 }
+    wasd [ CharA ]               --> { x = -1, y = 0 }
 
-    >>> wasd [ CharW, CharD ]
-    { x = 1, y = 1 }
+    wasd [ CharW, CharD ]        --> { x = 1, y = 1 }
 
-    >>> wasd [ CharA, CharS, CharD ]
-    { x = 0, y = -1 }
+    wasd [ CharA, CharS, CharD ] --> { x = 0, y = -1 }
 
 -}
 wasd : List Key -> Arrows
@@ -267,17 +260,14 @@ type Direction
 
 {-| Gives the arrow keys' pressed down state as follows:
 
-    >>> arrowsDirection []
-    NoDirection
+    arrowsDirection []                      --> NoDirection
 
-    >>> arrowsDirection [ ArrowLeft ]
-    West
+    arrowsDirection [ ArrowLeft ]           --> West
 
-    >>> arrowsDirection [ ArrowUp, ArrowRight ]
-    NorthEast
+    arrowsDirection [ ArrowUp, ArrowRight ] --> NorthEast
 
-    >>> arrowsDirection [ ArrowDown, ArrowLeft, ArrowRight ]
-    South
+    arrowsDirection [ ArrowDown, ArrowLeft, ArrowRight ]
+    --> South
 
 -}
 arrowsDirection : List Key -> Direction
@@ -287,17 +277,13 @@ arrowsDirection =
 
 {-| Similar to `arrows`, gives the W, A, S and D keys' pressed down state.
 
-    >>> wasdDirection []
-    NoDirection
+    wasdDirection []                      --> NoDirection
 
-    >>> wasdDirection [ CharA ]
-    West
+    wasdDirection [ CharA ]               --> West
 
-    >>> wasdDirection [ CharW, CharD ]
-    NorthEast
+    wasdDirection [ CharW, CharD ]        --> NorthEast
 
-    >>> wasdDirection [ CharA, CharS, CharD ]
-    South
+    wasdDirection [ CharA, CharS, CharD ] --> South
 
 -}
 wasdDirection : List Key -> Direction
@@ -338,8 +324,7 @@ arrowsToDir { x, y } =
 
 {-| Convert a key code into a `Key`.
 
-    >>> fromCode 13
-    Enter
+    fromCode 13 --> Enter
 
 -}
 fromCode : KeyCode -> Key
@@ -351,8 +336,7 @@ fromCode code =
 
 {-| Convert a `Key` into a key code.
 
-    >>> toCode Enter
-    13
+    toCode Enter --> 13
 
 -}
 toCode : Key -> KeyCode
