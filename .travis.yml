@@ -24,10 +24,10 @@ install:
   - mv $(npm config get prefix)/bin/elm-make $(npm config get prefix)/bin/elm-make-old
   - printf "#\041/bin/bash\n\necho \"Running elm-make with sysconfcpus -n 2\"\n\n$TRAVIS_BUILD_DIR/sysconfcpus/bin/sysconfcpus -n 2 elm-make-old \"\$@\"" > $(npm config get prefix)/bin/elm-make
   - chmod +x $(npm config get prefix)/bin/elm-make
-  - npm install -g elm-doc-test
+  - npm install -g elm-verify-examples
   - npm install -g elm-test
   - elm-package install -y
   - pushd tests && elm-package install -y && popd
 
 script:
-  - elm-doc-test && elm-test
+  - elm-verify-examples && elm-test
